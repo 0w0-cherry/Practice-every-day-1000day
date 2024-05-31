@@ -1,0 +1,127 @@
+#include<iostream>
+using namespace std;
+
+//1.多路开关
+int main0()
+{
+	int month;
+	cout << "请输入一个月份：";
+	cin >> month;
+	switch (month)
+	{
+	case 3:
+	case 4:
+	case 5:
+		cout << "当前是春季"<<endl;
+		break;
+	case 6:
+	case 7:
+	case 8:
+		cout << "当前是夏季"<<endl;
+		break;
+	case 9:
+	case 10:
+	case 11:
+		cout << "当前是秋季" << endl;
+		break;
+	case 12:
+	case 1:
+	case 2:
+		cout << "当前是冬季" << endl;
+		break;
+	default:
+		cout << "输入错误，无此月份" << endl;
+	}
+	return 0;
+}
+
+
+//2.打印菱形
+int main1()
+{
+	for (int i = 1; i <= 9; i++)
+	{
+		if (i >= 1 && i <= 5)
+		{
+			for (int j = 5; j > i; j--)
+			{
+				cout << " ";
+			}
+			for (int j = 1; j <= 2 * i - 1; j++)
+			{
+				cout << "*";
+			}
+			cout << endl;
+		}
+		else if(i>=6)
+		{
+			for (int j = 6; j <= i; j++)
+				cout << " ";
+			for (int j = 9 - 2 * (i - 5); j > 0; j--)
+			{
+				cout << "*";
+			}
+			cout << endl;
+		}
+	}
+	return 0;
+}
+
+
+//3.自动售卖机
+void menu()
+{
+	cout << "****************         自动售卖机           ***************"<<endl;
+	cout << "正在售卖的饮料： 1.可乐  2.雪碧    3.苏乐达"<<endl;
+	cout << "                   3元     5元       7元" << endl;
+	cout << "*************************************************************" << endl<<endl;
+}
+
+
+int main()
+{
+	int number, money;
+	menu();
+
+delect:
+	cout << "请输入要购买的饮料编号：";
+	cin >> number;
+	cout << endl;
+	switch (number)
+	{
+	case 1:
+		cout << "请支付购买可乐"<<endl;
+		money = 3;
+		break;
+	case 2:
+		cout << "请支付购买雪碧" << endl;
+		money = 5;
+		break;
+	case 3:
+		cout << "请支付购买苏乐达" << endl;
+		money = 7;
+		break;
+	default:
+		cout << "选择错误，请重新选择" << endl;
+		goto delect;
+		
+
+	}
+	cout << "请投币：";
+	int n;
+	while(money>0)
+	{
+		cin >> n;
+		money -= n;
+		if (money > 0)
+			cout << "还剩" << money << "元，请继续支付：";
+	}
+	if (money < 0)
+		cout << "已支付全款，并退款" << -money << "元！请拿走您的饮料。" << endl;
+	else if (money == 0)
+		cout << "已支付全款！请拿走您的饮料。" << endl;
+	
+
+	
+	return 0;
+}
