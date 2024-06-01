@@ -10,7 +10,7 @@ void swap(char& a, char& b)
 
 
 //将字符串前5个尾插到末尾
-int main100()
+int main()
 {
 	char s[] = { "abxsxcdef" };
 	int size = sizeof(s) - 2;//计算时注意末尾的 '\0'
