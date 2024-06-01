@@ -1,0 +1,37 @@
+#include<iostream>
+using namespace std;
+
+//升序
+int main4()
+{
+	cout << "为数组元素赋值：" << endl;
+	int a[10];
+	for (int i = 0; i < 10; i++)
+	{
+		printf("a[%d]=", i);
+		scanf("%d", &a[i]);
+	}
+
+	//优化，向前比较
+	//5 4 3 2 1
+	for (int i = 1; i < 10; i++)
+	{
+		int key = a[i];
+		int posi = i - 1;
+		while (posi >= 0 && a[posi] > key)
+		{
+			a[posi + 1] = a[posi];
+			posi--;
+		}
+		a[posi + 1] = key;
+	}
+	cout << "排序结果如下："<<endl;
+	for (int i = 0; i < 10; i++)
+	{
+		cout << a[i] << " ";
+	}
+	cout << endl;
+
+
+	return 0;
+}
