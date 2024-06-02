@@ -1,45 +1,48 @@
-void Bisearch(int left, int right, int a[])
+#include<iostream>
+using namespace std;
+
+void swap(int* a, int* b)
 {
+    int tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+void Bisearch(int left, int right, int* a) {
     if (left >= right)
         return;
+
     int i = left, j = right;
-    int mid = (i + j) / 2; 
-    int pivot = a[mid]; 
-    while (i <= j)
-    {
-        while (a[i] < pivot) // 左边找到第一个大于等于基准值的元素
-            i++;
-        while (a[j] > pivot) // 右边找到第一个小于等于基准值的元素
+    int keyi = left;
+
+    while (i < j) {
+        while (a[j] >=a[keyi] && i < j)//找小
             j--;
-        if (i <= j) // 找到需要交换的元素
-        {
-            int tmp = a[i];
-            a[i] = a[j];
-            a[j] = tmp;
+        while (a[i] <= a[keyi] && i < j)//找大
             i++;
-            j--;
-        }
+        swap(&a[i], &a[j]);
     }
-    // 递归处理左右子数组
-    Bisearch(left, j, a);
-    Bisearch(i, right, a);
+    swap(&a[keyi],& a[i]);
+
+    keyi = i;
+    Bisearch(left, keyi- 1, a);
+    Bisearch(keyi + 1, right, a);
 }
 
-int main()
-{
+int main() {
     cout << "请输入数组元素：" << endl;
-    int a[10];
-    for (int i = 0; i < 10; i++)
-    {
+    int a[10] = {1,4,7,8,5,2,3,6,9,0};
+    for (int i = 0; i < 10; i++) {
         printf("a[%d]=", i);
         scanf("%d", &a[i]);
     }
 
     Bisearch(0, 9, a);
 
-    for (int i = 0; i < 10; i++)
-    {
+    for (int i = 0; i < 10; i++) {
         cout << a[i] << " ";
     }
+
+
     return 0;
 }
+
