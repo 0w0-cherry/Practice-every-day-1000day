@@ -1,0 +1,71 @@
+#include<iostream>
+using namespace std;
+
+
+
+int GetMidi(int* a, int left, int right)
+{
+    int mid = (left + right) / 2;
+    if (a[left] > a[mid])
+    {
+        if (a[mid] > a[right])
+            return mid;
+        else if (a[right] > a[left])
+            return left;
+        else
+            return right;
+    }
+    else if (a[left] <= a[mid])
+    {
+        if (a[mid] < a[right])
+            return mid;
+        else if (a[left] > a[right])
+            return left;
+        else
+            return right;
+    }
+    return mid;
+}
+
+
+
+
+void Bisearch(int left, int right, int* a) {
+    if (left >= right)
+        return;
+
+    int i = left;//注意起始位置，不能+1
+    int j = right;
+    int keyi = GetMidi(a, left, right);//索引
+
+    //若不加 '=' ，会死循环
+    while (i < j) {
+        while (a[j] >= a[keyi] && i < j)//找小，防止越界
+            j--;
+        while (a[i] <= a[keyi] && i < j)//找大
+            i++;
+        swap(a[i], a[j]);
+    }
+    swap(a[keyi], a[i]);
+
+    keyi = i;
+    Bisearch(left, keyi - 1, a);
+    Bisearch(keyi + 1, right, a);
+}
+int main() {
+    cout << "请输入数组元素：" << endl;
+    int a[10] = { 1,4,7,8,5,2,3,6,9,0 };
+    //for (int i = 0; i < 10; i++) {
+    //    printf("a[%d]=", i);
+    //    scanf("%d", &a[i]);
+    //}
+
+    Bisearch(0, 9, a);
+
+    for (int i = 0; i < 10; i++) {
+        cout << a[i] << " ";
+    }
+
+
+    return 0;
+}
