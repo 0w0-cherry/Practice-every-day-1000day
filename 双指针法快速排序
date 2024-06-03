@@ -1,0 +1,59 @@
+#include<iostream>
+
+
+int GetMid(int* a, int begin, int end)
+{
+	int mid = (begin + end) / 2;
+	if (a[begin] < a[end])
+	{
+		if (a[mid] < a[begin])
+			return begin;
+		else if (a[mid] > a[end])
+			return end;
+		else
+			return mid;
+	}
+	else if(a[begin]>a[end])
+	{
+		if (a[mid] < a[end])
+			return end;
+		else if (a[mid] > a[begin])
+			return begin;
+		else
+			return mid;
+	}
+	return mid;
+}
+
+
+void QuickSort(int* a, int begin, int end)
+{
+	if (begin >= end)
+		return;
+	int mid = GetMid(a, begin, end);
+	std::swap(a[mid], a[begin]);
+	int keyi = begin;
+	int prev = begin;
+	int cur = begin + 1;
+	while (cur <= end)
+	{
+		if (a[cur] < a[keyi] && ++prev != cur)//注意此处，若prev+1==cur，则prev++但不交换
+			std::swap(a[cur], a[prev]);
+		cur++;
+	}
+	//此时prev右边比key大，prev及左边比key小
+	std::swap(a[prev], a[keyi]);
+	QuickSort(a, begin, prev - 1);
+	QuickSort(a, prev + 1, end);
+
+}
+int main()
+{
+	int arr[] = { 1,4,7,8,5,2,3,6,9 };
+	QuickSort(arr, 0, 8);
+	for (auto e : arr)
+	{
+		std::cout << e << " ";
+	}
+	return 0;
+}
