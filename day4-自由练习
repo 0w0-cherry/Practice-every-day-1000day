@@ -1,77 +1,7 @@
+//1.冒泡-假设法排序
 #include<iostream>
 using namespace std;
-
-int main()
-{
-	int a[10];
-	cout << "为数组元素赋值：" << endl;
-	for (int i = 0; i < 10; i++)
-	{
-		printf("a[%d]=", i);
-		scanf("%d", &a[i]);
-	}
-
-	for (int i = 0; i < 9; i++)
-	{
-		for (int j = i + 1; j < 10; j++)
-		{
-			if (a[i] > a[j])
-			{
-				int tmp = a[i];
-				a[i] = a[j];
-				a[j] = tmp;
-			}
-		}
-	}
-	for (int i = 0; i < 10; i++)
-		cout << a[i] << " ";
-	cout << endl;
-	return 0;
-}
-
-
-#include<iostream>
-using namespace std;
-
-//升序
-int main4()
-{
-	cout << "为数组元素赋值：" << endl;
-	int a[10];
-	for (int i = 0; i < 10; i++)
-	{
-		printf("a[%d]=", i);
-		scanf("%d", &a[i]);
-	}
-
-	//优化，向前比较
-	//5 4 3 2 1
-	for (int i = 1; i < 10; i++)
-	{
-		int key = a[i];
-		int posi = i - 1;
-		while (posi >= 0 && a[posi] > key)
-		{
-			a[posi + 1] = a[posi];
-			posi--;
-		}
-		a[posi + 1] = key;
-	}
-	cout << "排序结果如下："<<endl;
-	for (int i = 0; i < 10; i++)
-	{
-		cout << a[i] << " ";
-	}
-	cout << endl;
-
-
-	return 0;
-}
-
-
-#include<iostream>
-using namespace std;
-int main()
+int main1()
 {
 	int a[10];
 	cout << "为数组元素赋值：\n";
@@ -109,8 +39,73 @@ int main()
 	return 0;
 }
 
+#include<iostream>
+using namespace std;
+void swap(char& a, char& b)
+{
+	char tmp =a;
+	a = b;
+	b = tmp;
+}
 
 
+//2.旋转字符串，KMP
+int main2()
+{
+	char s[] = { "abxsxcdef" };
+	int size = sizeof(s) - 2;//计算时注意末尾的 '\0'
+	for (int i = 0; i < (5/2); i++)
+	{
+		swap(s[i], s[4 - i]);
+	}
+	for (int i = 5; i < size  ; i+=2)
+	{
+		swap(s[i], s[size + 5 - i]);
+	}
+	cout << s<<endl;
+	for (int i = 0; i < size / 2; i++)
+	{
+		swap(s[i], s[size - i]);
+	}
+	cout << s << endl;
+	return 0;
+}
+
+
+
+//3.交换法排序
+#include<iostream>
+using namespace std;
+
+int main3()
+{
+	int a[10];
+	cout << "为数组元素赋值：" << endl;
+	for (int i = 0; i < 10; i++)
+	{
+		printf("a[%d]=", i);
+		scanf("%d", &a[i]);
+	}
+
+	for (int i = 0; i < 9; i++)
+	{
+		for (int j = i + 1; j < 10; j++)
+		{
+			if (a[i] > a[j])
+			{
+				int tmp = a[i];
+				a[i] = a[j];
+				a[j] = tmp;
+			}
+		}
+	}
+	for (int i = 0; i < 10; i++)
+		cout << a[i] << " ";
+	cout << endl;
+	return 0;
+}
+
+//4.折半排序，优化
 #include<iostream>
 using namespace std;
 
@@ -141,7 +136,7 @@ void Bisearch(int left, int right, int* a) {
     Bisearch(keyi + 1, right, a);
 }
 
-int main() {
+int main4() {
     cout << "请输入数组元素：" << endl;
     int a[10] = {1,4,7,8,5,2,3,6,9,0};
     for (int i = 0; i < 10; i++) {
@@ -161,46 +156,50 @@ int main() {
 
 
 
+//5.优化插入排序（升序）
 #include<iostream>
 using namespace std;
-void swap(char& a, char& b)
+
+int main5()
 {
-	char tmp =a;
-	a = b;
-	b = tmp;
-}
+	cout << "为数组元素赋值：" << endl;
+	int a[10];
+	for (int i = 0; i < 10; i++)
+	{
+		printf("a[%d]=", i);
+		scanf("%d", &a[i]);
+	}
+
+	//优化，向前比较
+	//5 4 3 2 1
+	for (int i = 1; i < 10; i++)
+	{
+		int key = a[i];
+		int posi = i - 1;
+		while (posi >= 0 && a[posi] > key)
+		{
+			a[posi + 1] = a[posi];
+			posi--;
+		}
+		a[posi + 1] = key;
+	}
+	cout << "排序结果如下："<<endl;
+	for (int i = 0; i < 10; i++)
+	{
+		cout << a[i] << " ";
+	}
+	cout << endl;
 
 
-
-//将字符串前5个尾插到末尾
-int main()
-{
-	char s[] = { "abxsxcdef" };
-	int size = sizeof(s) - 2;//计算时注意末尾的 '\0'
-	for (int i = 0; i < (5/2); i++)
-	{
-		swap(s[i], s[4 - i]);
-	}
-	for (int i = 5; i < size  ; i+=2)
-	{
-		swap(s[i], s[size + 5 - i]);
-	}
-	cout << s<<endl;
-	for (int i = 0; i < size / 2; i++)
-	{
-		swap(s[i], s[size - i]);
-	}
-	cout << s << endl;
 	return 0;
 }
 
 
-
+//6.矩阵旋转
 #include<iostream>
 using namespace std;
 
-//矩阵旋转
-int main()
+int main6()
 {
 	int a[2][3];
 	int b[3][2];//90°
@@ -262,3 +261,6 @@ int main()
 	}
 	return 0;
 }
+
+
+
