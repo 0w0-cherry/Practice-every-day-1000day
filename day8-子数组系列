@@ -1,0 +1,90 @@
+https://leetcode.cn/problems/maximum-subarray/
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> dp(n);
+        dp[0]=nums[0];
+        int ret=dp[0];
+        for(int i=1;i<n;i++)
+        {
+            dp[i]=max(nums[i],dp[i-1]+nums[i]);
+            ret=max(ret,dp[i]);
+        }
+
+        return ret;
+    }
+};
+
+https://leetcode.cn/problems/longest-increasing-subsequence/
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> dp(n);
+        int ret=0;
+        for(int i=0;i<n;i++)
+        {
+            dp[i]=1;
+            for(int j=0;j<i;j++)
+            {
+                if(nums[j]<nums[i])
+                {
+                    dp[i]=max(dp[i],dp[j]+1);
+                }
+            }
+            ret=max(ret,dp[i]);
+        }
+        return ret;
+    }
+};
+
+
+https://leetcode.cn/problems/maximum-sum-circular-subarray/
+class Solution {
+public:
+    int maxSubarraySumCircular(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> f(n+1),g(n+1);//f记录最大，g记录最小
+        int fmax=INT_MIN,gmin=INT_MAX;
+
+        int sum=0;
+        for(int i=1;i<=n;i++)
+        {
+            int x=nums[i-1];
+            f[i]=max(x,f[i-1]+x);
+            fmax=max(fmax,f[i]);
+            g[i]=min(x,g[i-1]+x);
+            gmin=min(gmin,g[i]);
+            sum+=x;
+        }
+        return sum==gmin?fmax:max(fmax,sum-gmin);
+    }
+};
+
+https://leetcode.cn/problems/maximum-length-of-subarray-with-positive-product/
+class Solution {
+public:
+    int getMaxLen(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> f(n+1);
+        auto g=f;
+        f[0]=g[0]=0;
+        int ret=0;
+        for(int i=1;i<=n;i++)
+        {
+            if(nums[i-1]>0)
+            {
+                f[i]=f[i-1]+1;
+                g[i]=g[i-1]==0?0:g[i-1]+1;
+            }
+            else if(nums[i-1]<0)
+            {
+                f[i]=g[i-1]==0?0:g[i-1]+1;
+                g[i]=f[i-1]+1;
+            }
+            ret=max(ret,f[i]);
+        }
+        return ret;
+    }
+};
