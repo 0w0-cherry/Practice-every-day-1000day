@@ -3,7 +3,7 @@
 #include<vector>
 using namespace std;
 
-int main()
+int main1()
 {
 	cout << "   -------------------"<<endl;
 	cout << "  |    |    |    |    |" << endl;
@@ -21,7 +21,7 @@ int main()
 }
 
 //累乘
-int main()
+int main2()
 {
 	int i, n, mul;
 	i = 1, mul = 1;
@@ -35,7 +35,7 @@ int main()
 	return 0;
 }
 //1- 1/2 + 1/3 - 1/4....=？
-int main()
+int main3()
 {
 	double i = 1;
 	int flag = 1;
@@ -52,7 +52,7 @@ int main()
 	return 0;
 }
 
-int main()
+int main4()
 {
 	main1();
 
