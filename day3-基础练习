@@ -2,7 +2,7 @@
 using namespace std;
 
 //1.多路开关
-int main0()
+int main1()
 {
 	int month;
 	cout << "请输入一个月份：";
@@ -37,7 +37,7 @@ int main0()
 
 
 //2.打印菱形
-int main1()
+int main2()
 {
 	for (int i = 1; i <= 9; i++)
 	{
@@ -78,7 +78,7 @@ void menu()
 }
 
 
-int main()
+int main3()
 {
 	int number, money;
 	menu();
