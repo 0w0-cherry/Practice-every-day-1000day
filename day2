@@ -1,6 +1,6 @@
 #include<iostream>
 using namespace std;
-int main()
+int main1()
 {
 	cout << "      丹尼斯·里奇传奇——世界上最伟大的程序员和黑客               " << endl;
 	cout << endl;
@@ -14,7 +14,7 @@ int main()
 	return 0;
 }
 
-int main()
+int main2()
 {
 	int n = 1020;
 	int count = 0;
@@ -28,7 +28,7 @@ int main()
 	return 0;
 }
 
-int main()
+int main3()
 {
 	int i;
 	cin >> i;
@@ -51,7 +51,7 @@ int main()
 	return 0;
 }
 
-int main()
+int main4()
 {
 	double length = 4.2, wide = 1.9, high = 1.9;
 	int a = length / 0.5;
@@ -61,7 +61,7 @@ int main()
 	return 0;
 }
 
-int main()
+int main5()
 {
 	main1();
 	cout << "▅︻┷┯═─"<<endl;
