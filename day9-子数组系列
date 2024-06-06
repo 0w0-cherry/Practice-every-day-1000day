@@ -98,3 +98,24 @@ public:
         return dp[n];
     }
 };
+
+
+https://leetcode.cn/problems/maximum-absolute-sum-of-any-subarray/
+class Solution {
+public:
+    int maxAbsoluteSum(vector<int>& nums) {
+        int Max=0,Min=0;
+        int MaxSum=0,MinSum=0;
+        for(auto num:nums)
+        {
+            MaxSum+=num;
+            Max=max(Max,MaxSum);
+            MaxSum=max(0,MaxSum);
+
+            MinSum+=num;
+            Min=min(Min,MinSum);
+            MinSum=min(0,MinSum);
+        }
+        return max(Max,-Min);
+    }
+};
