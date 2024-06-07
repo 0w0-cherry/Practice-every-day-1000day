@@ -1,0 +1,185 @@
+//练习1：数据交换
+//异或
+int main1()
+{
+	int a = 1, b = 3;
+	cout << "原先的值：" << a << " " << b << endl;
+	a ^= b;
+	b = a ^ b;
+	a ^= b;
+	cout << "修改后的值："<<a << " " << b << endl;
+	return 0;
+}
+//临时变量
+int main2()
+{
+	int a = 1, b = 3;
+	cout << "原先的值："<<a << " " << b << endl;
+
+	int t = a;
+	a = b;
+	b = t;
+	cout << "修改后的值：" << a << " " << b << endl;
+
+	return 0;
+}
+//+
+int main3()
+{
+	int a = 1, b = 3;
+	
+	cout << "原先的值：" << a << " " << b << endl;
+	a += b;
+	b = a - b;
+	a = a - b;
+	cout << "修改后的值：" << a << " " << b << endl;
+	return 0;
+}
+//换位法
+int main4()
+{
+	int a = 1, b = 10, c = 5;
+	if (c < a)
+		swap(a, c);
+	if (c < b)
+		swap(b, c);
+	if (a > b)
+		swap(a, b);
+	cout << a << b << c;
+	return 0;
+}
+
+
+
+
+
+
+//1.斐波那契数列 
+//https://leetcode.cn/problems/fibonacci-number/
+class Solution {
+public:
+    int fib(int n) {
+        if (n == 0)
+            return 0;
+        vector<int> f(n + 1);
+        f[0] = 0, f[1] = 1;
+        for (int i = 2; i <= n; i++)
+        {
+            f[i] = f[i - 1] + f[i - 2];
+        }
+        return f[n];
+    }
+};
+
+//2.爬楼梯
+//https://leetcode.cn/problems/climbing-stairs/
+class Solution {
+public:
+    int climbStairs(int n) {
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++)
+        {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+};
+
+
+//3.不同路径
+//https://leetcode.cn/problems/unique-paths/
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1));
+        dp[0][1] = 1;
+        for (int i = 1; i <= m; i++)
+        {
+            for (int j = 1; j <= n; j++)
+            {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m][n];
+    }
+};
+
+//4.跳跃游戏
+//https://leetcode.cn/problems/jump-game/
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int k = 0;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (i > k)
+                return false;
+            k = max(k, i + nums[i]);
+        }
+        return true;
+    }
+};
+
+//5.跳跃游戏
+//https://leetcode.cn/problems/jump-game-ii/
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        if (nums.size() == 1)
+            return 0;
+        int ans = 0;
+        int begin = 0, end = 0;
+        while (end <= nums.size() - 2)
+        {
+            int maxpos = 0;
+            for (int i = begin; i <= end; i++)
+            {
+                maxpos = max(maxpos, i + nums[i]);
+            }
+            begin = end + 1;
+            end = maxpos;
+            ans++;
+        }
+        return ans;
+    }
+};
+
+
+//6.相同分数的最大操作数目
+//https://leetcode.cn/problems/maximum-number-of-operations-with-the-same-score-i/?envType=daily-question&envId=2024-06-07
+class Solution {
+public:
+    int maxOperations(vector<int>& nums) {
+        int n = nums.size();
+        int ret = 0;
+        for (int i = 0; i <= n - 2; i += 2)
+        {
+            if (nums[i] + nums[i + 1] != nums[1] + nums[0])
+            {
+                return ret;
+            }
+            ret++;
+        }
+        return ret;
+    }
+};
+
+
+//7.三角形最小路径和
+//https://leetcode.cn/problems/triangle/description/
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int m = triangle.size(), n = triangle.back().size();
+        for (int i = m - 2; i >= 0; i--)
+        {
+            for (int j = 0; j < n - (m - 1 - i); j++)
+            {
+                triangle[i][j] = min(triangle[i + 1][j], triangle[i + 1][j + 1]) + triangle[i][j];
+            }
+        }
+        return triangle[0][0];
+    }
+};
