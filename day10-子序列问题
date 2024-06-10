@@ -1,0 +1,74 @@
+
+https://leetcode.cn/problems/wiggle-subsequence/
+class Solution {
+public:
+    int wiggleMaxLength(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> f(n,1);
+        auto g=f;
+
+        int ret=1;
+        //i为0时也必须考虑，可能只有一个元素
+        //但此时也让ret的初值为1
+        for(int i=1;i<n;i++)
+        {
+            //f[i]=1;
+            for(int j=0;j<i;j++)
+            {
+                if(nums[j]<nums[i])
+                {
+                    f[i]=max(f[i],g[j]+1);
+                }
+                else if(nums[j]>nums[i])
+                {
+                    g[i]=max(g[i],f[j]+1);
+                }
+            }
+            ret=max(f[i],g[i]);
+        }
+        return ret;
+    }
+};
+
+
+
+
+https://leetcode.cn/problems/number-of-longest-increasing-subsequence/
+class Solution {
+public:
+    int findNumberOfLIS(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> len(n,1);
+        auto count = len;
+
+        int retlen=1,retcount=1;
+        for(int i=1;i<n;i++)
+        {
+            for(int j=0;j<i;j++)
+            {
+                if(nums[j]<nums[i])
+                {
+                    if(len[i]==len[j]+1)
+                    {
+                        count[i]+=count[j];
+                    }
+                    else if(len[j]+1>len[i])
+                    {
+                        len[i]=len[j]+1;
+                        count[i]=count[j];
+                    }
+                }
+            }
+            if(retlen==len[i])
+            {
+                retcount+=count[i];
+            }
+            else if(retlen<len[i])
+            {
+                retlen=len[i];
+                retcount=count[i];
+            }
+        }
+        return retcount;
+    }
+};
