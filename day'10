@@ -1,0 +1,211 @@
+#include<iostream>
+#include<assert.h>
+using namespace std;
+int main0()
+{
+	//相同模版，实例化出两个类
+	//bit::vector<int,10> a1;
+	//bit::vector<int,100> a2;
+
+	//相同模版，共实例化1个类
+	//bit::vector<int,100> a3;
+	//bit::vector<int,100> a4;
+
+}
+
+
+//定义一个模版类型的静态数组
+namespace bit
+{
+	//非类型模版参数   类型   常量
+	template<class T , size_t N  >
+	class array
+	{
+	public:
+		T& operator[](size_t index)
+		{
+			assert(index < _size);
+			return _array[index];
+		}
+		const T& operator[](size_t index)
+		{
+			assert(index < _size);
+			return _array[index];
+		}
+		size_t size() const
+		{
+			return _size;
+		}
+		bool empty() const
+		{
+			return _size == 0;
+		}
+	private:
+		T _array[N];
+		size_t _size;
+	};
+
+
+	template<class T>
+	bool Less(T left, T right)
+	{
+		return left < right;
+	}
+	//特化，不能单独写
+	//函数模版特化
+	template<class T>
+	bool Less<char*>(char* left, char* right)
+	{
+		return left < right;
+	}
+
+	bool Less(char* left, char* right)
+	{
+		return left < right;
+	}
+
+
+	template<class T2>
+	bool Less(T2 left, T2 right)
+	{
+		return left < right;
+	}
+
+
+	//函数模版特化
+	template<class T>
+	bool Less(T* left, T* right)
+	{
+		return left < right;
+	}
+	template<>
+	bool Less<array<int,10>>(array<int,10>* left,array<int,10>* right)
+	{
+		return left < right;
+	}
+}
+
+
+
+
+
+
+
+一.模版参数分类
+1.类型形参：出现在模板参数列表中，跟在class或者typename之类的参数类型名称。
+2.非类型形参：用一个常量作为类(函数)模板的一个参数，在类(函数)模板中可将该参数当成常量来使用（只支持整型做非类型模版参数）
+
+二.模版编译过程
+根据模版实例化-->半成品模版-->实例化成具体的 函数/类 -->语法编译
+
+三.实例化细节
+1.模版实例化时，会按需实例化
+2.若模版存在语法错误，不会报错。因为模版在最开始是声明，需要调用后将其实例化，才会细致检查语法错误
+3.若有特殊需求，可使用特化，且特化优先（也可使用具体的函数，与实例化后的模版构成重载）。但特化不能单独写（例如：指针之间比较，但比较的是指针指向的元素的大小）
+
+四.函数模版特化
+1.函数形参列表：必须要和模版函数的基础参数类型完全相同，如果不同编译器可能会报一些奇怪的错误
+template<class T>
+bool Less(T left,T right)
+{
+    return left<right;
+}
+//以下两种可允许同时存在
+//函数模版特化
+template<>
+bool Less<Date*>(Date* left,Date* right)
+{
+    return *left<*right;
+}
+//重载
+bool Less(Date* left,Date* right)
+{
+    return *left<*right;
+}
+五.全特化和半特化(偏特化)
+1.优先级：（1）常规函数/类 （2）全特化,（3）半特化(偏特化)，（4）常规模版
+2.功能：
+（1）特化部分参数
+（2）对参数进一步限制
+template<class T1,class T2>
+class Date
+{
+public:
+        Date(){cout<<"Date<T1,T2>"<<endl;}
+private:
+    T1 _d1;
+    T2 _d2;
+}
+//特化不能单独写
+//全特化
+template<>
+class Date<int,char>
+{
+    Date(){cout<<"Date<int,char>"<<endl;}
+}
+
+//半特化
+//1.
+template<class T1>
+class Date<T1,char>
+{
+    Date(){cout<<"Date<T1,char>"<<endl;}
+}
+//2.
+template<class T1，class T2>
+class Date<T1*,T2*>
+{
+    public：
+    Date(){cout<<"Date<T1*,T2*>"<<endl;}
+}
+
+六.声明和定义分离（模版不推荐做法）
+1.包含头文件后的实现原理：
+（1）不同文件但名字相同的命名空间会被合并
+（2）可前往指定命名空间去找（若声明在另一文件的命名空间中）
+2.编译具体过程：
+（1）发现声明时仅检查函数名和参数匹配，没问题则暂且过掉
+（2）链接时，查找在其他.cpp文件的定义
+3.分离常见问题
+（1）调用的地方知道实例化T成什么类型，但只有函数声明,没有定义
+（2）定义的地方，不知道实例化T成什么类型，所以有定义但无法实例化，也就无法生成函数的地址到符号表（可显示实例化）
+template<class T>
+size_t array<T>::size() const
+{
+    return 1;
+}
+显示实例化
+template
+class array<int>;
+
+template
+class array<double>;
+
+
+
+
+
+  一.array和数组的读写
+#include<array>
+int main()
+{
+    //1
+    //越界读，检查不出来
+    //越界写，抽查，局限性，很多位置检查不出来
+    int a[5];
+    
+    //2.
+    //可以检测任意读写是否越界
+    std::array<int,10>;
+    //
+}
+
+
+
+
+
+
+
+
+
+
