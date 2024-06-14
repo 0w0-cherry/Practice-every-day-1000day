@@ -1,0 +1,400 @@
+//笔记
+
+
+
+一.格式
+1.将公共元素提取出来，作为父类
+2.父类的成员是一个整体的自定义类型成员，不能单独处理,必须将整体全部初始化
+3.构造先父后子，析构先子后父。
+4.
+5.父类先被析构会造成子类访问父类成员为空，因此子类析构后自动调用父类析构
+class Person
+{
+public:
+Person(const char*:name)
+：_name(name)
+{
+    cout<<"Person()"<< endl;
+}
+    void Print()
+    {
+    cout << "name:" << _name << endl;
+    cout << "age:" << _age << endl;
+    }
+protected:
+    string _name = "peter";
+
+
+private:
+    int _age = 18; 
+};
+
+//    派生类   继承方式  基类
+class Student :public Person
+{
+public:
+    //父类是一个整体，必须整体初始化
+       Student(int num,const char* str,const char* name)
+           :Person(name)//类似匿名对象，令父类初始化
+           ，_num(num)
+           ,_str(str)
+       {
+           ;
+       }
+protected:
+    int _sydid;
+ int _num;
+ string _str;
+};
+int main()
+{
+    Student v;//父类的数据会调用自己的默认构造来初始化
+    v.Print();
+    return 0;
+}
+
+二.数据访问：成员在子类的访问方式 == Min(成员在基类的访问限定符，继承方式)，public>proted>private
+1.若数据不想在类外被访问，只能类内访问则调整为 protect/private(可见)
+2.不可见指不能在父类外被访问，只能调用父类的函数访问
+
+三.数据继承
+1.struct继承方式不写，则默认公有继承，公有访问限定符
+2.class继承方式不写，则默认私有，私有访问限定符
+
+四.数据转化
+1.不相关类型，不支持隐式转换,也不可强转
+2.子类可转化为父类，父类不可转化为子类（仅可公有继承）
+五.切割/切片：
+1.含义：将子类对象给父类对象
+2.原则：子可给父，父不可给子。父有的子都有，将部分数据切割出来。子有的父可能没有
+3.原理：每个子类对象都是一个特殊的父类对象
+4.赋值兼容：特殊处理，不产生临时对象
+class Person
+{
+    int a;
+}
+class Student: public Person
+{
+    int _studid;
+}
+int main()
+{
+    Student st;
+    Person p=st;
+    Person& ref=st;//变为子类对象中父类部分的别名
+    Person* ptr=&st;//指向子类对象中父类的部分
+    
+    //父类与派生类相同的数据会同步发生改变，派生类可改父类
+    ref.a=10;
+    ptr->a=10;
+    
+    
+    //不相关类型不能转化，强转也不行
+    //string str = i;
+    return 0;
+}
+六.域（命名空间域，类域，局部域，全局域）
+1.类域和命名空间域影响访问权限，局部域和全局域 影响生命周期
+2.同一个域不允许存在同名变量，不同域可以存在同名变量，且访问采取 局部优先，就近原则
+3.父类和子类默认选择派生类，屏蔽对父类该元素的直接访问，但可使用域作用访问限定符操作符"::"访问
+//域限定访问操作符
+class Person
+{
+    int a;
+    void Print()
+    {
+        ;    
+    }
+}
+class Student: public Person
+{
+    int _studid;
+}
+int main()
+{
+    Student x;
+    x.Person::a=10;
+    x.Person::Print();
+    return 0;
+}
+七.继承中的作用域
+1.在继承体系中基类和派生类都有独立的作用域，因此不同域可定义同名成员(被称为重定义，隐藏)
+2.子类和父类中有同名成员，子类成员将屏蔽父类对同名成员的直接访问，这种情况叫隐藏,也叫重定义。(在子类成员函数中，可以使用 基类::基类成员 显示访问)
+3.需要注意的是如果是成员函数的隐藏，只需要函数名相同就构成隐藏，此外只要是析构就会构成隐藏，除非使用"::"否则无法直接调用
+4.函数名相同且在同一个域才构成函数重载
+#include<iostream>
+using namespace std;
+class Person
+{
+public:
+    void Print()
+    {
+        cout << "name::" << _name << endl;
+        cout << "age::" << _age << endl;
+    }
+ void func(int i)
+ {
+     cout<<"1"<<endl; 
+ } 
+protected:
+    string _name = "aa";
+    int _age = 18;
+    int _num = 0;
+};
+
+
+struct Student : public Person
+{
+public:
+    void func( )
+    {
+     //重定义，就近原则，构成隐藏
+    cout << _num << endl;
+     //强行访问父类继承下来的，域限定访问操作符
+    cout << Person::_num << endl;
+    }
+protected:
+    int _stuid;
+    int _num = 1;
+};
+protected:
+    int _stuid;
+    int _num = 1;
+};
+
+ 
+  
+int main()
+{
+  Student st;
+  st.func();//重定义，就近原则，构成隐藏
+  st.Person::func(1);//域限定访问操作符，访问父类
+  //报错，访问的是父类的func()函数
+  //st.Person::func();
+   
+    return 0;
+}
+八.析构
+1.析构函数经过编译器处理后，子类和父类的析构函数会变为同名函数，构成隐藏
+2.父类先被析构会造成子类访问父类成员为空，因此析构必须先子后父。（构造必须先父后子，初始化列表会先走父）
+3.子类析构后自动调用父类析构
+
+
+
+/*---------------------------------------------------------------------------------------------*/
+
+
+
+//test.cpp
+
+
+
+using namespace std;
+class Person
+{
+public:
+	void Print()
+	{
+		cout << "name::" << _name << endl;
+		cout << "age::" << _age << endl;
+	}
+protected:
+	string _name = "aa";
+//private:
+	int _age = 18;
+	int _num = 0;
+};
+
+
+//struct 默认继承方式和访问限定符都是公有
+//class 默认继承方式和访问限定符都是私有
+struct Student : public Person
+{
+public:
+	void func()
+	{
+		cout << _name << endl;
+		//不能直接访问父类的私有成员，在，但不可直接调用，可间接使用
+		//cout << _age << endl;
+		//间接使用
+		Print();
+
+	}
+protected:
+	int _stuid;
+};
+
+class Teacher : public Person
+{
+protected:
+	int _jobid;
+};
+
+int main1()
+{
+	Student t;
+	//t._name += 'x';
+	//t.Print();
+	return 0;
+}
+
+int main2()
+{
+	int i = 1;
+	double d = i;
+	//单参数构造函数支持隐式类型转化
+	//数据类型转化会产生临时对象，临时对象具有常性
+	const string& s = "11111";
+
+	//不相关类型不能转化，强转也不行
+	//string str = i;
+
+	//必须公有继承，且子可给父，父不可给子
+	// 
+	//切割/切片：将子类对象给父类对象
+	//原理：每个子类对象都是一个特殊的父类对象
+	Student st;
+	Person p = st;
+
+	Person& ref = st;//变为子类对象中父类部分的别名
+
+
+	return 0;
+}
+/*-------------------------------------------------------*-
+
+
+
+
+#include<iostream>
+using namespace std;
+class Person
+{
+public:
+	Person(const char* name ="aa")
+		:_name(name)
+	{
+		cout << "Person()" << endl;
+	}
+	Person(const Person& p)
+		:_name(p._name)
+	{
+		cout << "Person(const Person& p)" << endl;
+	}
+	Person& operator=(const Person& p)
+	{
+		cout << "Person operator=(const Person& p)" << endl;
+		if (this != &p)
+			_name = p._name;
+		return *this;
+	}
+	~Person()
+	{
+		cout << "~Person()" << endl;
+	}
+protected:
+	string _name;
+};
+
+class Student : public Person
+{
+public:
+	Student(int num,const char* str,const char* name)
+		:Person(name)//此处不写，对于自定义类型，父类会调用默认构造
+		,_num(num)
+		,_str(str)
+	{}
+	Student(const Student& s)
+		:Person(s)//切割/切片，将子类传给父类
+		,_num(s._num)
+		,_str(s._str)
+	{}
+	//同名函数，与父类的构成隐藏，因此会自己调用自己死循环
+	//operator=(s);
+	//解决方案：域限定访问操作符
+	Student& operator=(const Student& s)
+	{
+		if (this != &s)//取地址
+		{
+			Person::operator=(s);//切割切片
+			_num = s._num;
+			_str = s._str;
+		}
+	}
+
+protected:
+	int _num;
+	string _str;
+	//父类成员，当成一个整体的一个自定义类型成员
+};
+
+
+int main()
+{
+	Student s(10,"xx","xxx");
+	return 0;
+}
+/*---------------------------------------------------------*/
+
+
+
+#include<iostream>
+using namespace std;
+class Person
+{
+public:
+	void Print()
+	{
+		cout << "name::" << _name << endl;
+		cout << "age::" << _age << endl;
+	}
+protected:
+	string _name = "aa";
+	int _age = 18;
+	int _num = 0;
+};
+
+struct Student : public Person
+{
+public:
+	void func()
+	{
+		//重定义，就近原则，构成隐藏
+		cout << _num << endl;
+		//强行访问父类继承下来的
+		cout << Person::_num << endl;
+	}
+protected:
+	int _stuid;
+	int _num = 1;
+};
+
+
+class A
+{
+public:
+	void func()
+	{
+		cout << "func()" << endl;
+	}
+};
+class B : public A
+{
+public:
+	void func(int i)
+	{
+		cout << "func(int i)->" << endl;
+	}
+};
+
+int main10()
+{
+	Student st;
+	st.func();
+
+	B bb;
+	bb.func(1);
+	bb.A::func();
+
+	return 0;
+}
