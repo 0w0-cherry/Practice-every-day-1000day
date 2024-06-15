@@ -1,0 +1,275 @@
+一.复用的常见体现
+1.函数逻辑的复用
+2.模版
+3.继承
+
+二.继承与友元
+- 友元关系不能被继承，即基类友元不能访问子类私有和保护成员
+
+三.继承与静态成员
+- 父类静态成员属于当前类，也属于当前类的所有派生类。
+- 静态成员只有一份，共用（地址相同）
+
+四.复杂的菱形继承及菱形虚拟继承
+- 单继承：一个子类只有一个直接父类时称这个继承关系为单继承
+
+- 多继承：一个子类有两个或以上直接父类时称这个继承关系为多继承
+
+
+- 菱形继承：菱形继承是多继承的一种特殊情况。
+//菱形继承存在二义性和数据冗余问题
+
+//1.菱形继承可通过显示指定访问哪个父类的成员可以解决二义性问题
+class A
+{
+public:
+
+
+      int _count;
+};
+class B : public A
+{
+
+    int _num;
+};
+class C: public A
+{
+protected:
+    int _id;
+};
+class Assistant :  public A,public B
+{
+;
+};
+int main()
+{
+    Assistant a;
+    //显示指定访问
+    a.B::_num="xx";
+    a.C::_num="yy";
+    return 0;
+}
+
+
+
+
+
+//2.但数据冗余问题通过菱形虚拟继承解决
+//菱形虚拟继承解决了数据冗余，因此二义性也解决了
+//虚拟继承中原先的位置变成了一个指针，指向的位置的数值为有多种功能，比如记录偏移量以计算实际存储的值的位置
+class A1//虚基类，虚基类放到最下面，变成公共的偏移量计算虚基类的位置
+{
+public:
+
+
+    int _a;
+};
+class B1 : virtual public A1//虚拟继承
+{
+public:
+    int _b;
+};
+class C1 : virtual public A1//虚拟继承
+{
+public:
+    int _c;
+};
+class D1 : public B1, public C1//公有_a,存储值改为指针，且指针记录偏移量
+{
+public:
+    int _d;
+};
+
+int main()
+{
+    D1 d;
+    d.B1::_a = 1;
+    d.C1::_a = 2;
+
+    d._a = 0;
+    d._b = 3;
+    d._c = 4;
+    d._d = 5;
+
+    //由于虚拟继承，所以共用被存储在底部的A1部分的值
+    //切片，指向D1 d中父类B1， A1的部分 （是一个记录了偏移量的指针）
+
+    B1* pb = &d;
+    //切片，地址偏移，指向D1 d父类C1，A1的部分
+ （是一个记录了偏移量的指针）   
+    C1* pc = &d;
+    return 0;
+}
+
+
+
+
+五.菱形虚拟继承
+1.设计目的：解决数据冗余问题，顺带解决了二义性问题
+2.存储细节：
+（1）在继承虚基类时使用关键字virtual
+（2）菱形虚拟继承中将共用的值存储在一个新的地址，原先的位置变成了一个指针，指向的位置的数值有一定的功能（比如记录与实际继承的值的地址的偏移值）
+（3）切割/切片 时，会通过存储在原先的位置的指针找到与实际存储值的地址的偏移值，以此算出实际存储的值的地址，并获得该值的地址
+六.继承和组合
+1.public继承是一种is-a（适合 继承）的关系，每个派生类对象都是一个基类对象（常规对象都可用，关联度高）
+2.组合是一种has-a（适合组合）的关系，B组合了A，则每个B对象中都有一个A对象（优先使用对象组合，仅有公有对象可用，关联度低）
+class A
+{
+private：
+     int _a;
+}
+//组合
+class B
+{
+    private:
+        A _aa;
+        int _b;
+}
+继承总结：
+- 事件中可以设计多继承，但不要设计菱形继承，因为太复杂，容易出现各种问题
+
+问题：
+1.C++有多继承，为什么？为什么Java没有
+2.多继承的问题是什么？（二义性问题可显示指定访问具体的父类的成员，数据冗余可使用虚拟继承，菱形继承，）
+3.菱形继承的问题如何解决？（菱形虚拟继承，但造成了效率的损失，且过于复杂）
+4.底层角度如何解决数据冗余和二义性问题？（共用，偏移值）
+5.如何开发设计软件更好？（低耦合，高内聚，类和类之间、不同模块之间关系不紧密，关联度不高）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*------------------------------------------------------------------------------------*/
+
+#include<iostream>
+//#include<string>
+using namespace std;
+
+
+
+//友元关系不能被继承，即基类友元不能访问子类私有和保护成员
+class Student;
+class Person
+{
+public:
+	friend void Display(const Person& p, const Student& s);
+//protected:
+	string _name; // 姓名
+};
+class Student : public Person
+{
+	friend void Display(const Person& p, const Student& s);
+protected:
+	int _stuNum; // 学号
+};
+void Display(const Person& p, const Student& s)
+{
+	cout << p._name << endl;
+	cout << s._stuNum << endl;
+}
+int main1()
+{
+	Person a;
+	a._name = "aa";
+	return 0;
+}
+/*--------------------------------------------------------------*/
+
+#include<iostream>
+using namespace std;
+
+class Person
+{
+public:
+	Person()
+	{
+		++_count;
+	}
+protected:
+	string _name;
+public:
+	static int _count;
+};
+
+int Person::_count = 0;
+class Student : public Person
+{
+protected:
+	int _stuNum;
+};
+
+class Graduate :public Student
+{
+protected:
+	string _a;
+};
+int main10()
+{
+	//_count 静态成员只有一份，共用
+	//父类静态成员属于当前类，也属于当前类的所有派生类
+	Person p;
+	Student s;
+	return 0;
+}
+/*---------------------------------------------------*/
+
+#include<iostream>
+using namespace std;
+
+class A1
+{
+public:
+
+
+    int _a;
+};
+class B1 : virtual public A1//虚拟继承
+{
+public:
+    int _b;
+};
+class C1 : virtual public A1//虚拟继承
+{
+public:
+    int _c;
+};
+class D1 : public B1, public C1
+{
+public:
+    int _d;
+};
+
+int main()
+{
+    D1 d;
+    d.B1::_a = 1;
+    d.C1::_a = 2;
+
+    d._a = 0;
+    d._b = 3;
+    d._c = 4;
+    d._d = 5;
+
+    //切片，指向D1 d中父类B1的部分
+    //由于虚拟继承，所以计算共用值的偏移，并获得该元素的地址
+    B1* pb = &d;
+    //切片，地址偏移，指向D1 d父类C1的部分
+    //由于虚拟继承，所以计算共用值的偏移，并获得该元素的地址
+    C1* pc = &d;
+    return 0;
+}
