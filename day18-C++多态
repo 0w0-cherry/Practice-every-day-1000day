@@ -1,0 +1,337 @@
+//p1,p2,p3的关系？
+class Base1 
+{ 
+public:
+	int _b1; 
+};
+
+class Base2 
+{ 
+public:
+	int _b2; 
+};
+class Derive : public Base2, public Base1 { public: int _d; };
+int main10() 
+{
+	Derive d;
+	Base1* p1 = &d;
+	Base2* p2 = &d;
+	Derive* p3 = &d;
+	cout << p1 << endl;
+	cout <<p2 << endl << p3 << endl;
+	return 0;
+}
+//A：p1 == p2 == p3 B：p1 < p2 < p3 C：p3 == p2 != p1 D：p3 != p2 != p1
+
+
+
+class A1
+{
+public:
+	virtual void func(int val = 1) { std::cout << "A1->" << val << std::endl; }
+	virtual void test() { func(); }
+};
+
+class B1 : public A1
+{
+public:
+	void func(int val = 0) { std::cout << "B1->" << val << std::endl; }
+};
+int main11(int argc, char* argv[])
+{
+	B1* p = new B1;
+	p->test();
+	return 0;
+}
+//A: A->0 B : B->1 C : A->1 D : B->0 E : 编译出错 F : 以上都不正确
+
+
+
+
+
+
+
+
+一.多态的含义：
+- 不同对象去做同一件事，多种形态，结果不一样
+
+二.多态的实现
+1.虚函数重写：要求三同：函数名、参数、返回值
+- 虚函数重写的例外情况：
+（1）协变：基类与派生类虚函数返回值类型不同（值必须是父子类关系或引用的指针）
+（2）析构函数的重写(基类与派生类析构函数的名字不同)：可以理解为编译器对析构函数的名称做了特殊处理，编译后析构函数的名称统一处理成destructor。
+（3）派生类重写虚函数可不加 virtual
+class A {};
+class B : public A{};;
+
+class Person
+{
+public:
+    virtual A* Print()
+    {
+        cout << "aa" << endl;
+        return nullptr;
+    }
+    virtual ~Person()
+    {
+        cout << "~Person" << endl;
+    }
+};
+class Student :public Person
+{
+public:
+    virtual B* Print()
+    {
+        cout << "a" << endl;
+        return nullptr;
+    }
+    /*virtual*/ ~Student()//派生类重写虚函数可不加 virtual
+    {
+        cout << "~Student()" << endl;
+    }
+private:
+    int* _ptr = new int[10];
+};
+
+
+int main()
+{
+    //只有在对象赋值给对象时，才发生切割
+    Person* p1 = new Person;
+    Person* p2 = new Student;
+
+    
+    delete p1;
+    delete p2;//内存泄漏,子类里的指针未被释放。被认为只有父类，无子类
+    //期望：指向不同对象时各自调用各自的析构
+    //结论：建议将析构函数定义为虚函数，以防止发生内存泄漏
+    return;
+}    
+2.父类的指针或者引用去调用虚函数
+class Person
+{
+public:
+    virtual void Print()
+    {
+    cout << "aa" << endl;
+    }
+};
+class Student :public Person
+{
+public:
+    virtual void Print()
+    {
+    cout << "a" << endl;
+    }
+};
+void Func(Person& p)//基类，原因：派生类可给基类，基类不可给派生类
+{
+    //多态,不同对象做同一件事，展现多种形态
+    p.Print();
+}
+int main()
+{
+    Person ps;
+    Student st;
+    Func(ps);
+    Func(st);
+
+    return 0;
+}
+
+三.不能被继承的类的两种实现
+1.父类构造函数私有，继承后子类的构造无法生成
+class Car
+{
+    private:
+        Car()
+        {}
+};
+class Benz:public Car//不能继承
+{
+    
+};
+2.fanal：
+class Car1
+{
+public:
+    virtual void Drive() final{}
+};
+class Car2 final//final修饰的类叫最终类，不能继承
+{
+public:
+    virtual void Drive() final{}
+};
+
+class Benz:public Car1//不能继承
+{
+    virtual void Drive() {cout<<"Benz"<<endl; }
+};
+四.override：
+1.功能：检查子类是否完成虚函数的重写（未重写则报错）
+class Benz:public Car
+{
+    virtual void Drive() override {cout<<"Benz"<<endl; }
+};
+五.重载、覆盖（重写）、隐藏（重定义）的对比
+1.重载
+（1）两个函数在同一个作用域
+（2）函数名/参数 不同
+2.重写（覆盖）
+（1）两个函数分别在基类和派生类的作用域
+（2）三同（函数名/参数/返回值），协变例外
+（3）两个函数必须是虚函数
+3.重定义（隐藏）
+（1）两个函数分别在基类和派生类的作用域
+（2）函数名相同 或 变量名相同
+（3）两个基类和派生类的同名函数不构成重写就是重定义
+
+/*---------------------------------------------------------------------*/
+
+
+
+
+  
+  #include<iostream>
+using namespace std;
+
+class A {};
+class B : public A{};;
+
+class Person
+{
+public:
+	virtual A* Print()
+	{
+		cout << "aa" << endl;
+		return nullptr;
+	}
+	virtual ~Person()
+	{
+		cout << "~Person" << endl;
+	}
+};
+class Student :public Person
+{
+public:
+	virtual B* Print()
+	{
+		cout << "a" << endl;
+		return nullptr;
+	}
+	virtual ~Student()
+	{
+		cout << "~Student()" << endl;
+	}
+private:
+	int* _ptr = new int[10];
+};
+
+//void Func(Person& p)
+//{
+//	p.Print();
+//}
+
+
+
+
+int main1()
+{
+	//只有在对象赋值给对象时，才发生切割
+	Person* p1 = new Person;
+	Person* p2 = new Student;
+
+	
+	delete p1;
+	delete p2;//内存泄漏,子类里的指针未被释放。被认为只有父类，无子类
+	//期望：指向不同对象时各自调用各自的析构
+	//结论：建议将析构函数定义为虚函数，以防止发生内存泄漏
+	return 0;
+}	
+
+
+
+//p1,p2,p3的关系？
+class Base1 
+{ 
+public:
+	int _b1; 
+};
+
+class Base2 
+{ 
+public:
+	int _b2; 
+};
+class Derive : public Base2, public Base1 { public: int _d; };
+int main10() 
+{
+	Derive d;
+	Base1* p1 = &d;
+	Base2* p2 = &d;
+	Derive* p3 = &d;
+	cout << p1 << endl;
+	cout <<p2 << endl << p3 << endl;
+	return 0;
+}
+//A：p1 == p2 == p3 B：p1 < p2 < p3 C：p3 == p2 != p1 D：p3 != p2 != p1
+
+
+
+class A1
+{
+public:
+	virtual void func(int val = 1) { std::cout << "A1->" << val << std::endl; }
+	virtual void test() { func(); }
+};
+
+class B1 : public A1
+{
+public:
+	void func(int val = 0) { std::cout << "B1->" << val << std::endl; }
+};
+int main11(int argc, char* argv[])
+{
+	B1* p = new B1;
+	p->test();
+	return 0;
+}
+//A: A->0 B : B->1 C : A->1 D : B->0 E : 编译出错 F : 以上都不正确
+
+/*---------------------------------------------------------------------------------------*/
+using namespace std;
+class Person
+{
+public:
+	virtual void Print()
+	{
+		cout << "aa" << endl;
+	}
+};
+class Student :public Person
+{
+public:
+	virtual void Print()
+	{
+		cout << "a" << endl;
+	}
+};
+//多态
+//1.父子类完成虚函数重写
+//2.父类的指针或者引用去调用虚函数
+void Func(Person& p)//基类，原因：派生类可给基类，基类不可给派生类
+{
+	//多态,不同对象做同一件事，展现多种形态
+	p.Print();
+}
+
+int main0()
+{
+	Person ps;
+	Student st;
+	Func(ps);
+	Func(st);
+
+	return 0;
+}
+
