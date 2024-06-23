@@ -1,0 +1,200 @@
+#pragma once
+#include<iostream>
+using namespace std;
+namespace key
+{
+	template<class K>
+	struct BSTreeNode
+	{
+		BSTreeNode<K>* _left;
+		BSTreeNode<K>* _right;
+		K _key;
+
+		BSTreeNode(const K& key)
+			:_left(nullptr)
+			, _right(nullptr)
+			, _key(key)
+		{}
+	};
+	template<class K>
+	class BSTree
+	{
+		typedef BSTreeNode<K> Node;
+	public:
+		bool Insert(const K& key)
+		{
+			if (_root == nullptr)
+			{
+				_root = new Node(key);
+				return true;
+			}
+			Node* cur = _root;
+			Node* parent = nullptr;
+			while (cur)
+			{
+				if (key > cur->_key)
+				{
+					parent = cur;
+					cur = cur->_right;
+				}
+				else if (key < cur->_key)
+				{
+					parent = cur;
+					cur = cur->_left;
+				}
+				else
+				{
+					return false;//已有元素，无法插入相同元素
+				}
+			}
+			cur = new Node(key);
+			//若key小于parent的key，若此时parent的左子树还有元素无法插入，会在上面继续遍历
+			//因此无需考虑插左边时，左边已有元素的情况
+			if (parent->_key > key)
+				parent->_left = cur;
+			if (parent->_key < key)
+				parent->_right = cur;
+			return true;
+		}
+		bool Find(const K& key)
+		{
+			Node* cur = _root;
+			while (cur)
+			{
+				if (key > cur->_key)
+				{
+					cur = cur->_right;
+				}
+				else if (key < cur->_key)
+				{
+					cur = cur->_left;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool Erase(const K& key)
+		{
+			Node* parent = _root;//若删除节点为头结点，parent不会被更新.因此为_root,避免未被更新
+			Node* cur = _root;
+			while (cur)
+			{
+				if (key > cur->_key)
+				{
+					parent = cur;
+					cur = cur->_right;
+				}
+				else if (key < cur->_key)
+				{
+					parent = cur;
+					cur = cur->_left;
+				}
+				else//找到，删除
+				{
+					//左为空，父亲指向我的右
+					if (cur->_left == nullptr)
+					{
+						if (cur == parent->_left)
+						{
+							parent->_left = cur->_right;
+						}
+						else if (cur == parent->_right)
+						{
+							parent->_right = cur->_right;
+						}
+						else if (cur == parent)//已考虑删除的节点是根节点，即parent未被更新
+						{
+							_root = cur->_right;
+						}
+						delete cur;
+					}
+					//右为空，父亲指向我的左
+					else if (cur->_right == nullptr)
+					{
+						if (cur == parent->_left)
+						{
+							parent->_left = cur->_left;
+						}
+						else if (cur == parent->_right)
+						{
+							parent->_right = cur->_left;
+						}
+						else if (cur == parent)
+						{
+							_root = cur->_left;
+						}
+					}
+					else
+					{
+						//左右都不为空
+						//查找右子树最左节点替代删除
+						Node* rightMin = cur->_right;
+						Node* rightMinP = cur;//初值不能为nullptr，否则min为第一个右节点会导致parent未被更新，依然是nullptr
+
+						while (rightMin->_left)//找最左节点
+						{
+							rightMinP = rightMin;
+							rightMin = rightMin->_left;
+						}
+						swap(cur->_key, rightMin->_key);
+
+
+						//你是我的左，我的左指向你的右（rightMin为最左节点，无左）
+						if (rightMin = rightMinP->_left)
+							rightMinP->_left = rightMin->_right;
+						//你是我的右，我的右指向你的右（rightMin为最左节点，无左）
+						else if (rightMin = rightMinP->_right)
+							rightMinP->_right = rightMin->_right;
+
+						delete rightMin;
+					}
+					return true;
+				}
+			}
+			return false;
+		}
+		void Inorder()
+		{
+			_Inorder(_root);
+			cout << endl;
+		}
+	private:
+		void _Inorder(Node* root)
+		{
+			if (root == nullptr)
+			{
+				return;
+			}
+			_Inorder(root->_left);
+			cout << root->_key << " ";
+			_Inorder(root->_right);
+		}
+	private:
+		Node* _root = nullptr;
+	};
+	void test1()
+	{
+		int a[] = { 8,3,10,1,6,14,-2,2,4,7,13 };
+		BSTree<int> p;
+		for (auto e : a)
+		{
+			p.Insert(e);
+		}
+		p.Inorder();
+		p.Erase(8);
+		p.Inorder();
+		//p.Erase(3);
+	}
+}
+/*---------------------------------------------------------*/
+#define _CRT_SECURE_NO_WARNINGS 1
+#include"BinarySearchTree.h"
+int main()
+{
+	key::test1();
+	return 0;
+}
