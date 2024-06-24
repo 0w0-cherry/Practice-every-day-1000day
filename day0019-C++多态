@@ -64,7 +64,7 @@ int main()
 {
     Base b;//自定义类型
     
-    VFPTR* p= (VFPTR*)(*((int*)&b))
+    VFPTR* p= (VFPTR*)(*((int*)&b))//取b的前四个字节作为值，将这个值当作地址传给指针p
     Print(p);
     return 0;
 }
