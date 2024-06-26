@@ -68,67 +68,69 @@ public:
 		}
 		return NULL;
 	}
-	//bool Erase(const K& key)
-	//{
-	//	Node* cur = _root;
-	//	Node* parent = _root;
-	//	while (cur)
-	//	{
-	//		if (cur->_key > key)
-	//		{
-	//			parent = cur;
-	//			cur = cur->_left;
-	//		}
-	//		else if(cur->_key<key)
-	//		{
-	//			parent = cur;
-	//			cur=cur->_right
-	//		}
-	//		else
-	//		{
-	//			//左为空
-	//			if (cur->_left == nullptr)
-	//			{
-	//				if (cur == parent->_left)
-	//					parent->_left = cur->_right;
-	//				else if (cur == parent->_right)
-	//					parent->_right = cur->_right;
-	//				else if (cur == parent)
-	//					parent = cur->_right;//被删的是根节点，更新根节点
-	//			}
-	//			//右为空
-	//			else if (cur->_right == nullptr)
-	//			{
-	//				if (cur == parent->_left)
-	//					parent->_left = cur->_left;
-	//				else if (cur == parent->_right)
-	//					parent->_right = cur->_left;
-	//			}
-	//			//左右都不为空
-	//			else
-	//			{
-	//				Node* rightMin = cur->_right;
-	//				Node* rightMinP = nullptr;
-	//				while (rightMin)
-	//				{
-	//					rightMinP = rightMin;
-	//					rightMin = rightMin->_left;
-	//				}
-	//				swap(rightMin->_key, cur->_key);
-	//				//由于找最左，所以parent接右子树
-	//				if (rightMinP->_left == rightMin)
-	//					rightMinP->_left = rightMin->_right;
-	//				else if (rightMinP->_right == rightMin)
-	//					rightMinP->_right = rightMin->_right;
-	//			}
-	//			delete cur;
-	//			return true;
+	bool Erase(const K& key)
+	{
+		Node* cur = _root;
+		Node* parent = _root;
+		while (cur)
+		{
+			if (cur->_key > key)
+			{
+				parent = cur;
+				cur = cur->_left;
+			}
+			else if(cur->_key<key)
+			{
+				parent = cur;
+				cur=cur->_right;
+			}
+			else
+			{
+				//左为空
+				if (cur->_left == nullptr)
+				{
+					if (cur == parent->_left)
+						parent->_left = cur->_right;
+					else if (cur == parent->_right)
+						parent->_right = cur->_right;
+					else if (cur == parent)
+						_root = cur->_right;//被删的是根节点，更新根节点
+				}
+				//右为空
+				else if (cur->_right == nullptr)
+				{
+					if (cur == parent->_left)
+						parent->_left = cur->_left;
+					else if (cur == parent->_right)
+						parent->_right = cur->_left;
+					else if (cur == parent)
+						_root = cur->_left;
+				}
+				//左右都不为空
+				else
+				{
+					Node* rightMin = cur->_right;
+					Node* rightMinP = nullptr;
+					while (rightMin)
+					{
+						rightMinP = rightMin;
+						rightMin = rightMin->_left;
+					}
+					swap(rightMin->_key, cur->_key);
+					//由于找最左，所以parent接右子树
+					if (rightMinP->_left == rightMin)
+						rightMinP->_left = rightMin->_right;
+					else if (rightMinP->_right == rightMin)
+						rightMinP->_right = rightMin->_right;
+				}
+				delete cur;
+				return true;
 
 
-	//		}
-	//	}
-	//	return false;
-	//}
+			}
+		}
+		return false;
+	}
 	void _InOrder(Node* root)
 	{
 		if (root == nullptr)
@@ -148,6 +150,7 @@ public:
 private:
 	Node* _root = nullptr;
 };
+
 /*------------------------------------------------------*/
 
 
