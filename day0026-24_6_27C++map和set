@@ -1,0 +1,158 @@
+#include<iostream>
+#include<map>
+using namespace std;
+
+void test_map1()
+{
+	map<string, string> dict;
+	pair<string, string> kv1("sort", "排序");
+	dict.insert(kv1);//有名对象
+	dict.insert(pair<string, string>("left", "左边"));//匿名对象
+	dict.insert(make_pair("right", "右边"));//创建临时的匿名对象
+	pair<string, string> kv2 = { "string","字符串" };//隐式类型转换
+
+	map<string,string>::iterator it = dict.begin();
+	while (it != dict.end())
+	{
+		//cout << *it << " ";
+		//cout << (*it).first << ":" << (*it).second << endl;
+		cout << it->first << ":" << it->second << endl;
+		//cout << it.operator->()->first << ":" << it.operator->()->second << endl;
+		it++;
+	}
+	cout << endl;
+
+	for (pair<string,string> kv : dict)
+	{
+		cout << kv.first << ":" << kv.second << endl;
+	}
+	cout << endl;
+	//std::pair<const std::string,std::string>，一个是std::pair<std::string,std::string>&
+	map<string, string> dict2 = { kv1,{"left","左边"},{"right","右边"} };
+}
+
+
+void test2()
+{
+	string strs[] = { "苹果", "西瓜", "苹果", "樱桃", "苹果", "樱桃", "苹果", "樱桃", "苹果" };
+	map<string, int> countMap;
+	for (string e : strs)
+	{
+		map<string, int>::iterator it = countMap.find(e);
+		if (it != countMap.end())
+		{
+			it->second++;
+		}
+		else
+		{
+			countMap.insert({ e,1 });//隐式类型转换
+		}
+	}
+
+	//cout << endl << endl<<endl<<endl;
+	for (pair<const string,int>& kv : countMap)
+	{
+		cout << kv.first<<":" << kv.second << endl;
+	}
+	cout << endl;
+
+	map<int, string> sortMap;
+	for (pair<const string, int>& kv : countMap)
+	{
+		sortMap.insert({ kv.second,kv.first });
+	}
+	cout << endl;
+
+	for (pair<const int, string>& kv : sortMap)
+	{
+		cout << kv.first << ":" << kv.second << endl;
+	}
+	cout << endl;
+}
+int main()
+{
+	//test_map1();
+	test2();
+	return 0;
+}
+
+
+/*----------------------------------------------------------------------*/
+
+https://www.nowcoder.com/practice/16f59b169d904f8898d70d81d4a140a0?tpId=94&tqId=31064&rp=1&ru=%2Factivity%2Foj&qru=%2Fta%2Fbit-kaoyan%2Fquestion-ranking&tPage=2
+#include <iostream>
+#include<map>
+#include<set>
+using namespace std;
+
+typedef pair<string,int> World;
+
+struct Com{
+    bool operator()(const World left,const World right)
+    {
+        //次数从大到小，若相同，则按照字典序
+        return left.second>right.second || left.first<right.first;
+    }
+};
+int main() {
+    string s;
+    map<string,int> countMap;
+    for(int i=0;i<s.size();i++)
+    {
+        string temp;
+        if(s[i]=='.' || s[i]==',' || s[i]==' ')
+        {
+            if(temp!="")
+            {
+                countMap[temp]++;
+            }
+            temp="";
+        }
+        else {
+            temp+= tolower(s[i]);
+        }
+    }
+
+    set<World,Com> x;
+    for(pair<string,int> e:countMap)
+    {
+        x.insert(e);
+    }
+    for(pair<string,int> e:x)
+    {
+        cout<<e.first<<":"<<e.second<<endl;
+    }
+
+    return 0;
+}
+
+/*-----------------------------------------------------------------*/
+https://leetcode.cn/problems/top-k-frequent-words/submissions/542414264/
+class Solution {
+public:
+struct JiangXu
+{    bool operator()(pair<string,int> s1,pair<string,int> s2)
+    {
+        return s1.second>s2.second;
+    }
+};
+    vector<string> topKFrequent(vector<string>& words, int k) {
+        map<string,int> wcount;
+        for(string& e:words)
+        {
+            wcount[e]++;
+        }
+
+
+        vector<pair<string,int>> v(wcount.begin(),wcount.end());
+        stable_sort(v.begin(),v.end(),JiangXu());
+
+
+        vector<string> ret;
+        for(int i=0;i<k;i++)
+        {
+            ret.push_back(v[i].first);
+        }
+        return ret;
+    }
+};
