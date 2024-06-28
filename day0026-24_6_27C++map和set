@@ -83,47 +83,52 @@ https://www.nowcoder.com/practice/16f59b169d904f8898d70d81d4a140a0?tpId=94&tqId=
 #include <iostream>
 #include<map>
 #include<set>
+#include<string>
 using namespace std;
 
-typedef pair<string,int> World;
+typedef pair<string, int> World;
 
-struct Com{
-    bool operator()(const World left,const World right)
-    {
-        //次数从大到小，若相同，则按照字典序
-        return left.second>right.second || left.first<right.first;
-    }
+struct Com {
+	bool operator()(const World left, const World right)
+	{
+		//次数从大到小，若相同，则按照字典序
+		return left.second > right.second || left.first < right.first;
+	}
 };
 int main() {
     string s;
-    map<string,int> countMap;
-    for(int i=0;i<s.size();i++)
-    {
+	map<string, int> countMap;
+	while (getline(cin, s))
+	{
         string temp;
-        if(s[i]=='.' || s[i]==',' || s[i]==' ')
-        {
-            if(temp!="")
-            {
-                countMap[temp]++;
-            }
-            temp="";
-        }
-        else {
-            temp+= tolower(s[i]);
-        }
-    }
+		for (int i = 0; i < s.size(); i++)
+		{
 
-    set<World,Com> x;
-    for(pair<string,int> e:countMap)
-    {
-        x.insert(e);
-    }
-    for(pair<string,int> e:x)
-    {
-        cout<<e.first<<":"<<e.second<<endl;
-    }
+			if (s[i] == '.' || s[i] == ',' || s[i] == ' ')
+			{
+				if (temp != "")
+				{
+					countMap[temp]++;
+				}
+				temp = "";
+			}
+			else {
+				temp += tolower(s[i]);
+			}
+		}
 
-    return 0;
+		set<World, Com> x;
+		for (World e : countMap)
+		{
+			x.insert(e);
+		}
+		for (World e : x)
+		{
+			cout << e.first << ":" << e.second << endl;
+		}
+	}
+
+	return 0;
 }
 
 /*-----------------------------------------------------------------*/
