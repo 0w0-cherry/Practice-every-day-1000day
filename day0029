@@ -1,0 +1,43 @@
+#include<string>
+using namespace std;
+
+
+//----------------------------------------------//
+//成员函数
+void cinstructor()//构造函数
+{
+	string s0("abcdef");//字符串初始化
+	string s1;//默认构造
+	string s2(s0);//用另一个string初始化
+	string s3(10, 'x');//10个'x'
+}
+void Operator等号()
+{
+	//运算符 =
+	string s1 = "xxxxx";//字符串
+	string s2 = s1;//另一个string
+	//string s3 = 'x';
+}
+//-----------------------------------------------//
+//modify修饰符
+void modify()
+{
+	string s1;
+	s1.push_back('x');
+
+	//operator+=
+	string s2;
+	s2 += s1;
+	s2 += 'x';
+	s2 += "xxxx";
+
+
+}
+
+
+int main()
+{
+	string s0("abcdef");
+
+	return 0;
+}
