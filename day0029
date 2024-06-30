@@ -16,7 +16,6 @@ void Operator等号()
 	//运算符 =
 	string s1 = "xxxxx";//字符串
 	string s2 = s1;//另一个string
-	//string s3 = 'x';
 }
 //-----------------------------------------------//
 //modify修饰符
