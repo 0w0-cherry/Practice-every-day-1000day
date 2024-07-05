@@ -1,0 +1,65 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<iostream>
+#include<string>
+using namespace std;
+int main()
+{
+	string s1("abcde");
+	string s2(s1, 1, 3);
+	//string s3(s1);
+	string s4;
+
+	//s4 = 'x';
+	s4 = "abcdefghi";
+	//s4 = s1;
+
+	//string::iterator it = s1.begin();
+	//it = s2.end();
+
+	//s4.push_back('x');
+
+	//s4 += 'x';
+	//s4 += "abc";
+	//s4 += s1;
+	
+	//s2.clear();
+
+	//s1.swap(s4);
+	//swap(s1, s4);
+
+	//string s5(s1.c_str());
+	//s5 = s1.c_str();
+	//s5 += s1.c_str();
+
+	//s4.append("abc");
+	//s4.append(5, 'x');
+	//s4.append(s1);
+
+	//cout << s4.capacity() << endl << s4.size()<<endl;
+	//cout << s4.empty()<<endl;
+
+	//s4.resize(2);
+	//s4.resize(10);
+	//s4.resize(20, 'x');
+
+	//s4.reserve(100);
+	s4.find('x', 0);
+	s4.find("anc", 0);
+	s4.find(s1, 0);
+
+	//s4.erase(s4.begin());
+	//s4.erase(s4.begin() + 2, s4.end() - 1);
+	//s4.erase(1, 3);
+
+	s4.insert(4, "abc");
+	s4.insert(4, "abcd", 2);
+	s4.insert(4, s1);
+	s4.insert(4, s1, 2);
+	s4.insert(s4.end(), s1.begin() + 2, s1.end() - 2);
+
+	s4.insert(s4.begin(), 'x');
+	s4.insert(0, 3, 'x');
+	s4.insert(s4.end(), 3, 'x');
+
+	return 0;
+}
