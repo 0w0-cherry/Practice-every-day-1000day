@@ -1,0 +1,58 @@
+一.成员函数
+1.构造函数
+参数：
+vector();
+vector (const vector& x);
+vector (szie_t n,  const T& val = T());
+
+template <class InputIterator>
+vector (InputIterator first, InputIterator last)
+使用：
+vector<int> a;
+vector<int> a(10);//定义了10个整型元素的向量
+vector<int> a(10,1);//定义了10个整型元素的向量,且给出每个元素的初值为1
+vector<int> a(b);//用b向量来创建a向量，整体复制性赋值
+vector<int> a(b.begin(),b.begin+3);//从迭代器区间中获得初值
+
+int b[7]={1,4,7,8,5,2,3,9};
+vector<int> a(b,b+2);//从数组中获得初值
+2.operator=
+参数：
+vector& operator= (const vector& x);
+
+使用：
+vector<int> a(3,0);
+vector<int> b=a;
+二.迭代器iterator
+1.begin()：包含const和非const版本
+2.end()：包含const和非const版本
+
+三.capacity
+1.size（）：
+2.capacity（）：
+3.resize（）：
+参数：
+void resize (size_type n, value_type val = value_type());
+4.reserve（）：
+参数：
+void reserve (size_type n);
+四.modify
+1. push_back：  void push_back(const T& x)；
+2. pop_back：   void pop_back()；
+3. swap：void swap(vector<T>& v)；
+4.erase：
+参数
+iterator erase (iterator position);
+iterator erase (iterator first, iterator last);
+a.erase(a.begin()+3);//删除单个位置
+a.erase(a.begin()+3,a.end()-3);//删除一段区间
+5.insert：
+参数
+iterator insert (iterator position, const value_type& val);
+void insert (iterator position, size_type n, const value_type& val);
+void insert (iterator position, InputIterator first, InputIterator last);
+
+vector<int> a;
+a.insert(a.end(),5);//迭代器指向位置插入单个数据
+a.insert(a.end(),3,5);//迭代器指向位置插入多个相同数据
+a.insert(a.end(),b+3,b+6);//b为数组，迭代器指向位置插入一段区间
