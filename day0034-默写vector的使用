@@ -1,0 +1,76 @@
+#include<string>
+using namespace std;
+int main1()
+{
+	string s0("abcd");
+	string s1(s0);
+	s0.insert(4, "abc");
+	s0.insert(4, "abcdef", 3);
+
+	s0.insert(4, s1);
+	s0.insert(4, s1,3);
+	s0.insert(s0.begin(), s1.begin(), s1.end());
+
+	s0.insert(s0.begin(), 1, 'x');
+	s0.insert(4, 1, 'x');
+	
+	s0.find('x', 0);
+	s0.find("abc", 0);
+	s0.find(s1, 0);
+
+
+	s0.erase(s0.end());
+	s0.erase(3, 5);
+	s0.erase(s0.begin() + 3, s0.begin() - 3);
+
+	return 0;
+}
+
+#include<vector>
+int main2()
+{
+	vector<int> a1;
+	vector<int> a2(10);
+	vector<int> a3(10,1);
+	vector<int> a4(a2);
+
+
+	vector<int> a5(a3.begin(), a3.end());
+	int b[7] = { 1,4,7,8,5,2,3 };
+	vector<int> a(b, b + 2);
+
+	//非const
+	a5.begin();
+	a5.end();
+	//const
+	a5.cbegin();
+	a5.cend();
+
+	a5 = a;
+	a5.size();
+	a5.capacity();
+	a5.resize(1);
+	a5.resize(10);
+	a5.resize(20, 'x');
+	a5.reserve(10);
+	a5.reserve(100);
+
+	a5.push_back('x');
+	a5.pop_back();
+
+	a5.swap(a);
+	swap(a5, a);
+
+	a5.erase(a5.begin() + 2);
+	a5.erase(a5.begin() + 2, a5.end() - 2);
+
+	a5.insert(a.end(), 5);
+	a5.insert(a.end(), 5,3 );
+	a5.insert(a.end(), b + 2, b + 7);
+
+	return 0;
+}
+int main()
+{
+	return 0;
+}
