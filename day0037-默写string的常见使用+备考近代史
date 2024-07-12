@@ -1,0 +1,118 @@
+#include<vector>
+using namespace std;
+void test1()
+{
+	//成员函数
+	vector<int> a;
+	vector<int> a1(10);
+	vector<int> a2(10, 1);
+	vector<int> a3(a1);
+	int b[7] = { 1,2,3,6,5,4,7 };
+	vector<int> a4(a1.begin(), a1.end());
+	vector<int> a5(b + 2, b + 5);
+	vector<int> a6 = { 1,4,7,8,5,2,3,6 };
+
+
+	a = a6;
+
+
+	//iterator迭代器
+	a.begin();
+	a.end();
+
+
+	//capacity容纳能力
+	a.size();
+	a.capacity();
+	a.empty();
+	a.resize(1);
+	a.resize(10);
+	a.resize(20, 'x');
+	a.reserve(100);
+
+	//element access元素访问
+	a[0];
+
+	//modifiers修改
+	a.push_back(1);
+	a.pop_back();
+	a.swap(a6);
+	a.erase(a.begin() + 2, a.end() - 2);
+	a.erase(a.begin());
+	a6.clear();
+
+	a.insert(a.end(), 5);
+	a.insert(a.end(), 3, 5);
+	a.insert(a.end(), b + 2, b + 5);
+
+	//非成员函数
+	swap(a6, a1);
+	swap(a6, a1);
+}
+void test2()
+{
+	//成员函数
+	vector<int> a;
+	vector<int> a1(10);
+	vector<int> a2(10,1);
+	vector<int> a3(a1);
+
+	//vector<int> a4(a2.begin(),a2.end());
+	int b[7] = { 1,4,7,8,5,2,3 };
+	vector<int> a5(b + 2, b + 5);
+	vector<int> a6 = { 1,4,7,8,5,2,3 };
+
+	a = a6;
+
+	//iterator迭代器
+	a.begin();
+	a.end();
+	//capacity容纳能力
+	a.size();
+	a.capacity();
+	a.empty();
+	a.resize(1);
+	a.resize(10);
+	a.resize(20,10);
+	//a.reserve(100);
+
+	//element access元素访问
+	a[0];
+
+
+	//modifiers修改
+	a.push_back(5);
+	a.pop_back();
+	a6.clear();
+	//a2.swap(a6);
+	a.erase(a.begin());
+	a.erase(a.begin() + 2, a.end() - 2);
+	a.insert(a.begin(), 3);
+	a.insert(a.begin(), 3,5);
+	//a.insert(a.begin(), b + 2, b + 5);
+
+
+
+	//非成员函数重载
+	swap(a, a6);
+	swap(a, a6);
+}
+int main()
+{
+	test1();
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//近代史第三章节大纲
