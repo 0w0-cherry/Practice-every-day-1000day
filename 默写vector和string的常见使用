@@ -1,0 +1,167 @@
+#include<bits/stdc++.h>
+using namespace std;
+void test1()
+{
+	//
+	vector<int> a;
+	vector<int> a1(10);
+	vector<int> a2(10,1);
+
+	int b[7] = { 1,4,7,5,2,3,6 };
+	vector<int> a3(b + 2, b + 5);
+	vector<int> a4 = { 1,4,7,8,5,2,3,6 };
+
+
+	vector<int> a5(a4);
+	vector<int> a6(a4.begin() + 2, a4.begin() + 4);
+	a = a4;
+
+	a.begin();
+	a.end();
+
+
+	a.size();
+	a.capacity();
+	a.empty();
+	a.resize(1);
+	a.resize(10);
+	a.resize(20, 1);
+	a.reserve(100);
+
+	a[0];
+
+
+	a.push_back(1);
+	a.pop_back();
+	a.swap(a1);
+	a.swap(a1);
+	a.erase(a.end());
+	a.erase(a.begin() + 2, a.end() - 2);
+	a1.clear();
+	//a.insert(a.end(), 5);
+	//a.insert(a.end(), 3, 5);
+
+
+	//a.insert(a.end(), b + 2, b + 5);
+
+
+	swap(a1, a);
+	swap(a1, a);
+
+}
+void test2()
+{
+	string s("abcdef");
+	string s1;
+	string s2(s1);
+	string s3(s1, 3, 2);
+	string s4("abcd");
+	string s5("abcdef", 2);
+
+	s1 = "abcde";
+	s1 = 'x';
+	s1 = s;
+
+	s.begin();
+	s.end();
+
+	s.size();
+	s.capacity();
+	s.empty();
+	s.resize(1);
+	s.resize(10);
+	s.resize(10,'x');
+	s.reserve(100);
+
+
+	s[0];
+
+	s += s;
+	s += 'x';
+	s += "abc";
+	s.append(s);
+	s.append(s,3,5);
+	s.append(3, 'x');
+	s.push_back('x');
+	s.pop_back();
+	s.insert(4, "abc");
+	s.insert(4, "abc",2);
+	s.insert(4, s);
+	s.insert(4, s,3,5);
+	s.insert(s.end(), s1.begin(), s1.end());
+
+	s.insert(4, 3, 'x');
+	s.insert(s.begin(), 3, 'x');
+
+	s.erase(s.begin());
+	s.erase(3, 5);
+	s.erase(s.begin() + 2, s.end() - 2);
+
+
+	s.find( 'x',0);
+	s.find("abc", 0);
+	s.find(s, 0);
+
+}
+void test3()
+{
+	string s("abcde");
+	string s1;
+	string s2(s);
+	string s3(s, 3,1000);
+	string s4("abc");
+	string s5("ancd", 3);
+	s1 = 'x';
+	s1 = "abc";
+	s1 = s;
+
+	s1.begin();
+	s.end();
+
+	s.size();
+	s.capacity();
+	s.empty();
+	s.resize(1);
+	s.resize(10);
+	s.resize(10,'x');
+	s.reserve(100);
+
+	s[0];
+
+	s += "abc";
+	s += 'x';
+	s += s;
+	s.append(s);
+	//s.append(s, 3, 5);
+	//s.append(3, 'x');
+	//s.push_back('x');
+	//s.pop_back();
+	s.erase(s.begin());
+	s.erase(s.begin() + 2, s.end() - 2);
+	s.erase(3, 5);
+	s.swap(s1);
+	s.swap(s1);
+
+	s.insert(4, "abc");
+	s.insert(4, "abc",3);
+	s.insert(4, s);
+	s.insert(4, s,5);
+	s.insert(s.end(), s.begin(), s.end());
+
+	s.insert(4, 3, 'x');
+	s.insert(s.end(), 3, 'x');
+
+	s.c_str();
+	s.find('x', 0);
+	s.find("abc", 0);
+	s.find(s, 0);
+
+	s = s + s;
+	swap(s, s1);
+	swap(s, s1);
+
+}
+int main()
+{
+	return 0;
+}
