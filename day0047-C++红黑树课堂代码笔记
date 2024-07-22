@@ -1,0 +1,236 @@
+#include<bits/stdc++.h>
+using namespace std;
+enum Colour
+{
+	RED,
+	BLACK
+};
+template<class K,class V>
+struct RBTreeNode
+{
+	RBTreeNode<K, V>* _left;
+	RBTreeNode<K, V>* _right;
+	RBTreeNode<K, V>* _parent;
+
+	pair<K, V> _kv;
+	Colour _col;
+
+	RBTreeNode(const pair<K,V>& kv)
+		:_left(nullptr)
+		, _right(nullptr)
+		, _parent(nullptr)
+		,_col(RED)
+		, _kv(kv)
+	{}
+};
+template<class K,class V>
+class RBTree
+{
+	typedef RBTreeNode<K, V> Node;
+public:
+	bool insert(const pair<K, V>& kv)
+	{
+		if (_root == nullptr)
+		{
+			_root = new Node(kv);
+			_root->_col = BLACK;
+			return true;
+		}
+		Node* parent = nullptr;
+		Node* cur = _root;
+		while (cur)
+		{
+			parent = cur;//提取
+			if (cur->_kv.first > kv.first)
+				cur = cur->_left;
+			else if (cur->_kv.first < kv.first)
+				cur = cur->_right;
+			else
+				return false;
+		}
+		cur = new Node(kv);
+		cur->_col = RED;
+		if (kv.first > parent->_kv.first)
+			parent->_right = cur;
+		else
+			parent->_left = cur;
+		cur->_parent = parent;
+
+
+		//初始情况下，parent存在
+		//但经过向上处理后，parent不确定存在
+		while (parent && parent->_col == RED)
+		{
+			Node* grandfather = parent->_parent;
+			if (parent == grandfather->_left)
+			{
+				Node* uncle = grandfather->_right;
+				//情况一：若叔叔存在且为红，变黑即可
+				//总结：变色+继续处理
+				if (uncle && uncle->_col == RED)
+				{
+					parent->_col = uncle->_col = BLACK;
+					grandfather->_col = RED;//令当前支路的黑结点数量不变
+
+					//继续向上处理
+					cur = grandfather;
+					parent = cur->_parent;
+				}
+				//情况二：叔叔不存在 或 存在且为黑
+				//总结：  （单/双）旋转+变色+结束
+				else 
+				{
+					if (cur == parent->_left)//单纯左边红
+					{
+						//    g
+						//  p    u
+						//c
+						RotateR(grandfather);
+						parent->_col = BLACK;
+						grandfather->_col = RED;
+					}
+					else//左边红右边红
+					{
+						//     g       左单旋      g        右单旋     c
+						// p       u   ---->    c      u    ----->   p    g
+						//    c               p                              u         
+						RotateL(parent);
+						RotateR(grandfather);
+						cur->_col = BLACK;
+						grandfather->_col = RED;
+					}
+					//祖父节点必然为红色，且各支路黑色平衡
+					//最上面的结点为黑色，但由于允许存在连续的黑，调整结束
+					break;
+				}
+
+			}
+			else
+			{
+        //作业部分
+				Node* uncle = grandfather->_left;
+				if (uncle && uncle->_col == RED)
+				{
+					parent->_col = uncle->_col = BLACK;
+					grandfather->_col = RED;
+
+				}
+				else
+				{
+					;
+				}
+				break;
+			}
+		}
+		_root->_col = BLACK;
+		return true;
+	}
+	void InOrder()
+	{
+		_InOrder(_root);
+	}
+	bool IsBalance()
+	{
+		if (_root->_col == RED)
+			return false;
+		return Check(_root,0);
+	}
+private:
+	bool Check(Node* root,int num)
+	{
+		if (root == nullptr)
+		{
+			return true;
+		}
+		if (root->_col == RED && root->_parent->_col == RED)
+		{
+			cout << root->_kv.first << "->存在连续的红色结点" << endl;
+			return false;
+		}
+
+		if (root->_col == BLACK)
+			num++;
+		return Check(root->_left,num)
+			&& Check(root->_right,num);
+	}
+	void _InOrder(Node* root)
+	{
+		if (root == nullptr)
+			return;
+
+		_InOrder(root->_left);
+		cout << root->_kv.first << ":" << root->_kv.second << endl;
+		_InOrder(root->_right);
+
+	}
+	void RotateL(Node* parent)
+	{
+		Node* subR = parent->_right;
+		Node* subRL = subR->_left;
+
+		parent->_right = subRL;
+		if (subRL)
+			subRL->_parent = parent;
+		subR->_left = parent;
+
+		Node* ppNode = parent->_parent;
+		parent->_parent = subR;
+		if (parent == _root)
+		{
+			_root = subR;
+			subR->_parent = nullptr;
+		}
+		else
+		{
+			if (parent == ppNode->_left)
+				ppNode->_left = subR;
+			else if (parent == ppNode->_right)
+				ppNode->_right = subR;
+			subR->_parent = ppNode;
+		}
+	}
+	void RotateR(Node* parent)
+	{
+		Node* subL = parent->_left;
+		Node* subLR = subL->_right;
+
+		parent->_left = subLR;
+		if (subLR)
+			subLR->_parent = parent;
+
+		subL->_right = parent;
+		Node* ppNode = parent->_parent;
+		parent->_parent = subL;
+
+		if (parent == _root)
+		{
+			_root = subL;
+			_root->_parent = nullptr;
+		}
+		else
+		{
+			if (parent == ppNode->_left)
+				ppNode->_left = subL;
+			else if (parent == ppNode->_right)
+				ppNode->_right = subL;
+			subL->_parent = ppNode;
+		}
+	}
+	Node* _root=nullptr;
+	size_t _size = 0;
+};
+void TestRBTree1()
+{
+	int a[] = { 1,4,7,8,5,2,36 };
+	RBTree<int,int> t1;
+	for (auto e : a)
+	{
+		//if (e == 4)//条件断点
+		//{
+		//	int i = 0;
+		//}
+		t1.insert({ e,e });
+	}
+	t1.InOrder();
+	cout << t1.IsBalance() << endl;
+}
