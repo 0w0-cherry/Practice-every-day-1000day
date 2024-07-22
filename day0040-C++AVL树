@@ -190,6 +190,7 @@ public:
 			}
 			subR->_parent = ppNode;
 		}
+                parent->_bf = suRL->_bf = 0;
 	}
 	//右左高
 	void RotateRL(Node* parent)
