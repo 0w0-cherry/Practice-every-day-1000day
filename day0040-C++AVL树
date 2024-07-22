@@ -1,4 +1,3 @@
-#pragma once
 #include<iostream>
 #include<string>
 #include<assert.h>
@@ -56,6 +55,7 @@ public:
 			parent->_right = cur;
 		else
 			parent->_left = cur;
+		cur->_parent = parent;
 
 		//更新平衡因子
 		while (parent)
@@ -88,12 +88,12 @@ public:
 				//右左高，
 				else if (parent->_bf == 2 && cur->_bf == -1)
 				{
-					;
+					RotateRL(parent);
 				}
 				//左右高
 				else if (parent->_bf == -2 && cur->_bf == 1)
 				{
-					;
+					RotateLR(parent);
 				}
 				break;
 			}
@@ -132,6 +132,9 @@ public:
 	{
 		Node* subL = parent->_left;
 		Node* subLR = subL->_right;
+		if (subLR)
+			subLR->_parent = parent;
+
 		Node* ppNode = parent->_parent;
 		subL->_right = parent;
 		parent->_parent = subL;
@@ -152,10 +155,6 @@ public:
 			}
 			subL->_parent = ppNode;
 		}
-
-		parent->_left = subLR;
-		if(subLR)
-			subLR->_parent = parent;
 
 		
 		parent->_bf = subL->_bf = 0;
@@ -213,10 +212,14 @@ public:
 			parent->_bf = 0;
 			subR->_bf = 1;
 		}
-		else
+		else if(bf==0)
 		{
 			parent->_bf = 0;
 			subR->_bf = 0;
+		}
+		else
+		{
+			assert(false);
 		}
 	}
 	//左右高
@@ -302,4 +305,18 @@ private:
 private:
 	Node* _root = nullptr;
 };
+
+void test1()
+{
+	int a[] = { 1,4,7,5,2,3,6 };
+	AVLTree <int, int> p;
+
+	p.Insert({3,5});
+	for (auto e : a)
+	{
+		p.Insert({e,e});
+	}
+	p.InOrder();
+
+}
 
