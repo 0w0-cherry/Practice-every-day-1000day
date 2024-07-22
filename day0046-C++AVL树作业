@@ -171,6 +171,7 @@ private:
 				ppNode->_right = subR;
 			subR->_parent = ppNode;
 		}
+                parent->_bf = subR->_bf = 0;
 	}
 	void RotateR(Node* parent)
 	{
