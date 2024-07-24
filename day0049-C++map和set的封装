@@ -1,0 +1,40 @@
+#include<bits/stdc++.h>
+using namespace std;
+namespace bit
+{
+	template<class K, class V>
+	class map
+	{
+		//仿函数，kot对象，用来取T类型的data对象中的key
+		struct MapKeyOfT
+		{
+			const K& operator()(const pair<K, V>& kv)
+			{
+				return kv.first;
+			}
+		};
+	private:
+		RBTree<K, pair<K, V>, MapKeyOfT> _t;
+	};
+}
+
+
+
+namespace bit
+{
+	template<class K>
+	class set
+	{
+		//内部类
+		//仿函数，kot对象，用来取T类型的data对象中的key
+		struct SetKeyOfT
+		{
+			const K& operator()(const K& key)
+			{
+				return key;
+			}
+		};
+	private:
+		RBTree<K, K,SetKeyOfT> _t;
+	};
+} 
