@@ -1,0 +1,588 @@
+#include<bits/stdc++.h>
+using namespace std;
+enum Colour
+{
+	RED,
+	BLACK
+};
+template<class T>
+struct RBTreeNode
+{
+	RBTreeNode<T>* _left;
+	RBTreeNode<T>* _right;
+	RBTreeNode<T>* _parent;
+	T _data;
+	Colour _col;
+
+	RBTreeNode(const T& data)
+		:_left(nullptr)
+		, _right(nullptr)
+		, _parent(nullptr)
+		, _col(RED)
+		, _data(data)
+	{}
+};
+template<class T,class Ref,class Ptr>
+struct _RBTreeIterator
+{
+	typedef RBTreeNode<T> Node;
+	typedef _RBTreeIterator<T, Ref, Ptr> Self;//typedef _RBTreeIterator<T, T&, T*> Iterator;
+	Node* _node;
+	_RBTreeIterator(Node* node)
+		:_node(node)
+	{}
+
+	Ref operator*()//返回值Ref的类型，在map中是 const T&
+	{
+		return _node->_data;
+	}
+	Ptr operator->()
+	{
+		return &_node->_data;
+	}
+	bool operator!=(const Self& s)
+	{
+		return _node != s._node;
+	}
+
+	Self& operator++()
+	{
+		if (_node->_right)
+		{
+			//下一个，右树最左节点
+			Node* leftmin = _node->_right;
+			while (leftmin->_left)//该节点必然不为空，且左为空结束
+			{
+				leftmin = leftmin->_left;
+			}
+			_node = leftmin;
+		}
+		else
+		{
+			//无右节点
+			//下一个，孩子
+			Node* cur = _node;
+			Node* parent = cur->_parent;
+			while (parent && parent->_right == cur )
+			{
+				cur = parent;
+				parent = parent->_parent;
+			}
+			_node = parent;
+		}
+		return *this;
+	}
+};
+
+
+template<class K, class T,class KeyOfT>
+class RBTree
+{
+	typedef RBTreeNode<T> Node;
+public:
+	typedef _RBTreeIterator<T, T&, T*> Iterator;
+	typedef _RBTreeIterator<T, const T&,const T*> ConstIterator;
+	RBTree() = default;
+	RBTree(const RBTree<K, T, KeyOfT>& t)
+	{
+		_root = Copy(t._root);
+	}
+	RBTree<K, T, KeyOfT>& operator=(RBTree<K, T, KeyOfT> t)
+	{
+		swap(_root, t._root);
+		return *this;
+	}
+	~RBTree()
+	{
+		//Destroy(_root);
+		_root = nullptr;
+	}
+	Iterator Begin()
+	{
+		Node* left = _root;
+		while (left && left->_left)
+		{
+			left = left->_left;
+		}
+		return Iterator(left);
+	}
+	Iterator End()
+	{
+		return Iterator(nullptr);
+	}
+	ConstIterator Begin() const
+	{
+		Node* left = _root;
+		while (left && left->_left)
+		{
+			left = left->_left;
+		}
+		return ConstIterator(left);
+	}
+	ConstIterator End() const
+	{
+		return ConstIterator(nullptr);
+	}
+	Iterator Find(const K& key)
+	{
+		Node* cur = _root;
+		while (cur)
+		{
+			if (cur->_key < key)
+				cur = cur->_right;
+			else if (cur->_key > key)
+				cur = cur->_left;
+			else
+				return Iterator(cur);
+		}
+		return End();
+	}
+	//已有该数据，insert返回数据下标
+	//该数据为新数据，insert返回插入后的该数据的下标
+	pair<Iterator,bool> Insert(const T& data)
+	{
+		if (_root == nullptr)
+		{
+			_root = new Node(data);
+			_root->_col = BLACK;
+			return make_pair(Iterator(_root),true);
+		}
+
+		KeyOfT kot;
+		Node* parent = nullptr;
+		Node* cur = _root;
+		while (cur)
+		{
+			//K
+			//pair<K,V>
+			//kot对象，用来取T类型的data对象中的key
+			parent = cur;//提取
+			if (kot(cur->_data)<kot(data))
+				cur = cur->_left;
+			else if (kot(cur->_data) > kot(data))
+				cur = cur->_right;
+			else
+				return make_pair(Iterator(cur), false);
+		}
+		cur = new Node(data);
+		Node* newnode = cur;
+		cur->_col = RED;
+		if (kot(data)> kot(parent->_data))
+			parent->_right = cur;
+		else
+			parent->_left = cur;
+		cur->_parent = parent;
+
+
+		//初始情况下，parent存在
+		//但经过向上处理后，parent不确定存在
+		while (parent && parent->_col == RED)
+		{
+			Node* grandfather = parent->_parent;
+			if (parent == grandfather->_left)
+			{
+				Node* uncle = grandfather->_right;
+				//情况一：若叔叔存在且为红，变黑即可
+				//总结：变色+继续处理
+				if (uncle && uncle->_col == RED)//需要避免叔叔为空，对空解引用
+				{
+					parent->_col = uncle->_col = BLACK;
+					grandfather->_col = RED;//令当前支路的黑结点数量不变
+
+					//继续向上处理
+					cur = grandfather;
+					parent = cur->_parent;
+				}
+				//情况二：叔叔不存在 或 存在且为黑
+				//总结：  （单/双）旋转+变色+结束
+				else
+				{
+					if (cur == parent->_left)//单纯左边红
+					{
+						//    g
+						//  p    u
+						//c
+						RotateR(grandfather);
+						parent->_col = BLACK;
+						grandfather->_col = RED;
+					}
+					else//左边红右边红
+					{
+						//     g       左单旋      g        右单旋     c
+						// p         u   ---->  c      u    ----->   p    g
+						//    c               p                              u         
+						RotateL(parent);
+						RotateR(grandfather);
+						cur->_col = BLACK;
+						grandfather->_col = RED;
+					}
+					//祖父节点必然为红色，且各支路黑色平衡
+					//最上面的结点为黑色，但由于允许存在连续的黑，调整结束
+					break;
+				}
+
+			}
+			else if (parent == grandfather->_right)
+			{
+				Node* uncle = grandfather->_left;
+				if (uncle && uncle->_col == RED)
+				{
+					parent->_col = uncle->_col = BLACK;
+					grandfather->_col = RED;
+					//向上处理
+
+					cur = grandfather;
+					parent = cur->_parent;
+
+				}
+				else//（单/双）旋转+变色+结束
+				{
+					if (cur == parent->_right)
+					{
+						//      g                         p
+						//   u     p        ->         g     c                
+						//           c               u                      
+						RotateL(grandfather);
+						parent->_col = BLACK;
+						grandfather->_col = RED;
+					}
+					else
+					{
+						//         g                g                 c            
+						//     u       p    ->   u     c     ->    g     p      
+						//           c                    p      u 
+						RotateR(parent);
+						RotateL(grandfather);
+						cur->_col = BLACK;
+						grandfather->_col = RED;
+					}
+					break;
+
+				}
+			}
+		}
+		_root->_col = BLACK;
+		return make_pair(Iterator(newnode), true);
+	}
+	void InOrder()
+	{
+		_InOrder(_root);
+	}
+	bool IsBalance()
+	{
+		if (_root->_col == RED)
+			return false;
+
+		//求出某一支路的黑节点总数，并将其作为参考值
+		int refnum = 0;
+		Node* cur = _root;
+		while (cur)
+		{
+			if (cur->_col == BLACK)
+				refnum++;
+			cur = cur->_left;
+		}
+
+		return Check(_root, 0, refnum);
+	}
+private:
+	Node* Copy(Node* root)
+	{
+		if (root == nullptr)
+			return nullptr;
+		Node* newroot = new Node(root->_data);
+		newroot->_col = root->_col;
+
+		newroot->_left=Copy(root->_left);
+		if (root->_left)
+			root->_left->_parent = newroot;
+
+		
+		newroot->_right=Copy(root->_right);
+		if (root->_right)
+			root->_right->_parent = newroot;
+		return newroot;
+	}
+	void Destroy(Node* root)
+	{
+		if (root == nullptr)
+			return;
+		Destroy(root->_left);
+		Destroy(root->_right);
+		delete root;
+		root = nullptr;
+	}
+	bool Check(Node* root, int blacknum, const int refnum)
+	{
+		if (root == nullptr)
+		{
+			//cout << balcknum << endl;
+			if (refnum != blacknum)
+			{
+				cout << "存在黑色结点的数量不相等的路径" << endl;
+				return false;
+			}
+			return true;
+		}
+		if (root->_col == RED && root->_parent->_col == RED)
+		{
+			cout << root->_kv.first << "->存在连续的红色结点" << endl;
+			return false;
+		}
+
+		if (root->_col == BLACK)
+			blacknum++;
+		return Check(root->_left, blacknum, refnum)
+			&& Check(root->_right, blacknum, refnum);
+	}
+	void _InOrder(Node* root)
+	{
+		if (root == nullptr)
+			return;
+
+		_InOrder(root->_left);
+		cout << root->_kv.first << ":" << root->_kv.second << endl;
+		_InOrder(root->_right);
+
+	}
+	void RotateL(Node* parent)
+	{
+		Node* subR = parent->_right;
+		Node* subRL = subR->_left;
+
+		parent->_right = subRL;
+		if (subRL)
+			subRL->_parent = parent;
+		subR->_left = parent;
+
+		Node* ppNode = parent->_parent;
+		parent->_parent = subR;
+		if (parent == _root)
+		{
+			_root = subR;
+			subR->_parent = nullptr;
+		}
+		else
+		{
+			if (parent == ppNode->_left)
+				ppNode->_left = subR;
+			else if (parent == ppNode->_right)
+				ppNode->_right = subR;
+			subR->_parent = ppNode;
+		}
+	}
+	void RotateR(Node* parent)
+	{
+		Node* subL = parent->_left;
+		Node* subLR = subL->_right;
+
+		parent->_left = subLR;
+		if (subLR)
+			subLR->_parent = parent;
+
+		subL->_right = parent;
+		Node* ppNode = parent->_parent;
+		parent->_parent = subL;
+
+		if (parent == _root)
+		{
+			_root = subL;
+			_root->_parent = nullptr;
+		}
+		else
+		{
+			if (parent == ppNode->_left)
+				ppNode->_left = subL;
+			else if (parent == ppNode->_right)
+				ppNode->_right = subL;
+			subL->_parent = ppNode;
+		}
+	}
+	Node* _root = nullptr;
+	size_t _size = 0;
+};
+/*-----------------------------------------------------------------------*/
+#include<bits/stdc++.h>
+#include"RBTree.h"
+using namespace std;
+namespace bit
+{
+	template<class K, class V>
+	class map
+	{
+		//仿函数，kot对象，用来取T类型的data对象中的key
+		struct MapKeyOfT
+		{
+			const K& operator()(const pair<K, V>& kv)
+			{
+				return kv.first;
+			}
+		};
+	public:
+		typedef typename RBTree<K, pair<const K, V>, MapKeyOfT>::Iterator iterator;
+		typedef typename RBTree<K, pair<const K, V>, MapKeyOfT>::ConstIterator const_iterator;
+		iterator begin()
+		{
+			return _t.Begin();
+		}
+		iterator end()
+		{
+			return _t.End();
+		}
+		const_iterator begin() const
+		{
+			return _t.Begin();
+		}
+		const_iterator end() const
+		{
+			return _t.End();
+		}
+		pair<iterator, bool> insert(const pair<K, V>& kv)
+		{
+			return _t.Insert(kv);//此处的Insert调用的是自己写的
+		}
+		V& operator[](const K& key)
+		{
+			pair<iterator, bool> ret = _t.Insert(make_pair(key, V()));
+			return ret.first->second;
+		}
+	private:
+		//pair中的first不能被修改
+		RBTree<K, pair<const K, V>, MapKeyOfT> _t;
+	};
+
+	void test_map()
+	{
+		map<string,int> s;
+		s.insert({ "苹果",1});
+		s.insert({ "香蕉",1});
+		s.insert({ "例子",1});
+		s.insert({"苹果",3});
+		map<string, int>::iterator it = s.begin();
+
+		while (it != s.end())
+		{
+			cout << it->first<<":"<<it->second<<endl;
+			++it;
+		}
+		cout << endl;
+	}
+	void test2()
+	{
+		string arr[] = { "苹果","西瓜","苹果","西瓜","苹果","西瓜","苹果" };
+		map<string, int> countMap;
+		for (auto& e : arr)
+		{
+			countMap[e]++;
+		}
+		for (auto& kv : countMap)
+		{
+			cout << kv.first << ":" << kv.second << endl;
+		}
+		cout << endl;
+	}
+}
+
+/*--------------------------------------------------------------------------------*/
+#include"RBTree.h"
+
+
+namespace bit
+{
+	template<class K>
+	class set
+	{
+		//内部类
+		//仿函数，kot对象，用来取T类型的data对象中的key
+		struct SetKeyOfT
+		{
+			const K& operator()(const K& key)
+			{
+				return key;
+			}
+		};
+	public:
+		//去未实例化的模版中取内嵌类型，需要使用typename
+		typedef typename RBTree<K, const K, SetKeyOfT>::Iterator iterator;
+		typedef typename RBTree<K,const K, SetKeyOfT>::ConstIterator const_iterator;
+
+		//函数重载，函数名相同,参数不同
+		const_iterator begin() const
+		{
+			return _t.Begin();
+		}
+
+		const_iterator end() const
+		{
+			return _t.End();
+		}
+		iterator begin()
+		{
+			return _t.Begin();
+		}
+
+		iterator end()
+		{
+			return _t.End();
+		}
+		iterator find(const K& key)
+		{
+			return _t.Find(key);
+		}
+		pair<iterator, bool> insert(const K& key)
+		{
+			return _t.Insert(key);//此处的Insert调用的是自己写的
+		}
+	private:
+		RBTree<K, const K,SetKeyOfT> _t;
+	};
+	void PrintSet(const set<int>& m)
+	{
+		for (auto e : m)
+		{
+			cout << e<<" ";
+		}
+	}
+	void test_set()
+	{
+		set<int> m;
+		m.insert(5);
+		m.insert(3);
+		m.insert(4);
+		m.insert(5);
+		m.insert(5);
+		m.insert(2);
+
+		set<int>::iterator it = m.begin();
+		while (it != m.end())
+		{
+			//*it += 5;//operator*的返回值是const
+			//RBTree<K, const K,SetKeyOfT>，插入值时使用的是T& ，即第二个模版参数，因此K前要加const
+			cout << *it << " ";
+			++it;
+		}
+		cout << endl;
+		PrintSet(m);
+
+
+		set<int> copy = m;//浅拷贝
+		for (auto e : copy)
+		{
+			cout << e << " ";
+		}
+		cout << endl;
+	}
+}
+
+/*----------------------------------------------------------------------*/
+#include"map.h"
+#include"set.h"
+using namespace std;
+int main()
+{
+	bit::test_map();
+	bit::test_set();
+	bit::test2();
+	return 0;
+}
+
