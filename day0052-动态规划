@@ -27,7 +27,7 @@ public:
     }
 
     void rotate(vector<int>& nums, int k) {
-        k %= nums.size();
+        k %= nums.size();//需要考虑k>nums.size()的情况
         int mid=nums.size()-1-k;
         reverse(nums, 0,mid );
         reverse(nums, mid+1, nums.size() - 1);
