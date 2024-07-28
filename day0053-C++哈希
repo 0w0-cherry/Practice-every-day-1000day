@@ -1,0 +1,127 @@
+#include<vector>
+#include<bits/stdc++.h>
+
+using namespace std;
+
+enum State
+{
+	EMPTY,
+	EXIST,
+	DELATE
+};
+template<class K,class V>
+struct HashDate
+{
+	pair<K, V> _kv;  //在std类域里面  你需要展开
+	State _state;
+};
+template<class K,class V>
+class HashTable
+{
+public:
+	HashTable()
+	{
+		_tables.resize(10);
+	}
+	bool Insert(const pair<K, V>& kv)
+	{
+		//扩容
+		if (  _n*10 / _tables.size() >= 7)
+		{
+			//size_t newsize = _tables.size() * 2;
+			//vector<HashTables<K, V>> newtables(newsize);
+			//旧表重新计算负载到新表
+			//for(size_t i=0;i<_tables.size();i++)
+			//{ }
+			HashTable<K, V> newHT;
+			newHT._tables.resize(_tables.size() * 2);
+			//旧表重新计算负载到新表
+			for (size_t i = 0; i < _tables.size(); i++)
+			{
+				if (_tables[i]._state == EXIST)
+				{
+					newHT.Insert(_tables[i]._kv);
+				}
+			}
+			_tables.swap(newHT._tables);
+		}
+
+		size_t hashi = kv.first% _tables.size();
+		while (_tables[hashi]._state == EXIST)
+		{
+			++hashi;
+			hashi %= _tables.size();
+		}
+
+		_tables[hashi]._kv = kv;
+		_tables[hashi]._state = EXIST;
+		++_n;
+		return true;
+	}
+	HashDate<K, V>* Find(const K& key)
+	{
+		size_t hashi = key % _tables.size();
+		while (_tables[hashi]._state != EMPTY)
+		{
+			if (_tables[hashi]._kv.first == key && 
+				_tables[hashi]._state==EXIST)
+				return &_tables[hashi];
+			++hashi;
+			hashi %= _tables.size();
+		}
+		return nullptr;
+	}
+	bool Erase(const K& key)
+	{
+		HashDate<K, V>* ret = Find(key);
+		if (ret == nullptr)
+			return false;
+		else
+		{
+			ret->_state = DELATE;//删除仅把状态改变
+			--_n;
+			return true;
+		}
+	}
+private:
+	vector<HashDate<K, V>> _tables;
+	size_t _n;
+};  //这里没有;号
+
+void TestHT1()
+{
+	int a[] = { 10001,11,55,24,19,12,31 };
+	HashTable<int, int> ht;
+	for (auto e : a)
+	{
+		ht.Insert(make_pair(e, e));
+	}
+
+	cout << ht.Find(55) << endl;
+	cout << ht.Find(31) << endl;
+
+	ht.Erase(55);
+	cout << ht.Find(55) << endl;
+	cout << ht.Find(31) << endl;
+}
+void TestHT2()
+{
+	int a[] = { 10001,11,55,24,19,12,31 };
+	HashTable<int, int> ht;
+	for (auto e : a)
+	{
+		ht.Insert(make_pair(e, e));
+	}
+
+	ht.Insert(make_pair(32, 32));
+	ht.Insert(make_pair(32, 32));
+}
+
+#include"HashTable.h"
+
+int main()
+{
+	TestHT1();
+	TestHT2();
+	return 0;
+}
