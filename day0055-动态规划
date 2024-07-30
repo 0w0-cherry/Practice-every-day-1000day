@@ -1,0 +1,40 @@
+class Solution {
+public:
+    bool Condition(char a,char b='A')
+    {
+        if(b=='A' && a!='0')//只传一个值
+        {
+            return true;
+        }
+        int sum=(a-'0')*10+(b-'0');//传两个值
+        if(b!='A' && sum>=10 && sum<=26)
+        {
+            return true;
+        }
+        return false;
+    }
+    int numDecodings(string s) {
+        int n =s.size();
+        vector<int> dp(n);
+        dp[0]= s[0]=='0'?0:1;
+        if(n==1)
+        {
+            return dp[0];
+        }
+        if(Condition(s[1]) )
+        dp[1]+=dp[0];
+
+        if(Condition(s[0],s[1]))
+        dp[1]++;
+
+        for(int i=2;i<n;i++)
+        {
+            if(Condition(s[i]) )
+            dp[i]+=dp[i-1];
+
+            if(Condition(s[i-1],s[i]))
+            dp[i]+=dp[i-2];
+        }
+        return dp[n-1];
+    }
+};
