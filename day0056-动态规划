@@ -1,0 +1,199 @@
+//题目：地下城游戏
+https://leetcode.cn/problems/dungeon-game/
+方法1：
+（1）由于从当前位置为结尾时，血量的变动会影响前面的dp值，因此不能以当前位置为结尾，只能以当前位置为开始，计算抵达终点所需要的初始血量
+（2）初始化时需要将其他位置全部设为 数据的最高值，也就是说此血量必然能通关。而需要的则是最低能通关的血量
+（3）站在终点位置是至少需要1滴血
+（4）在游戏进行过程中，站在每个位置至少需要1滴血
+class Solution {
+public:
+    int calculateMinimumHP(vector<vector<int>>& dun) {
+        int m=dun.size();
+        int n=dun[0].size();
+        vector<vector<int>>dp(m+1,vector<int>(n+1,200000));
+        dp[m][n-1]=1;
+        for(int i=m-1;i>=0;i--)
+        {
+            for(int j=n-1;j>=0;j--)
+            {
+                //满足条件下的最低血量
+                dp[i][j]=min(dp[i+1][j],dp[i][j+1])-dun[i][j];//需要扣除吃到的血包
+                dp[i][j]=max(dp[i][j],1);
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+/*----------------------------------------------------------------------------------------------*/
+题目二：不同路径II
+https://leetcode.cn/problems/unique-paths-ii/
+方法1：
+（1）以当前位置为结尾，dp[i][j]表示起点到当前位置的路径总数
+（2）路径方法+=时，不是方法+1，而是让前面的方法多走一步，即继承起点到前面位置的方法数
+（3）在当前位置没有障碍，即能抵达当前位置才+=前面的值
+（4）因此在能抵挡当前位置的条件下， dp[i][j] +=从左边到当前位置的路径数 和 上面到当前位置的路径数
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m=obstacleGrid.size();
+        int n=obstacleGrid[0].size();
+        vector<vector<long long>>dp(m+1,vector<long long>(n+1));
+
+        dp[i][j]表示以当前位置为结尾，有多少种路径
+        dp[0][1]=1;
+        for(int i=1;i<=m;i++)
+        {
+            for(int j=1;j<=n;j++)
+            {
+                if(obstacleGrid[i-1][j-1]==0)
+                {
+                    dp[i][j]=dp[i-1][j]+dp[i][j-1];
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
+方法2：
+（1）以当前位置为开始，dp[i][j]表示当前位置到终点的路径总数
+（2）路径方法+=时，不是方法+1，而是让后面的方法在起点的位置提前一步，即继承后面位置到终点的方法数
+（3）在当前位置没有障碍，即能抵达当前位置才+=后面的值
+（4）因此在能抵挡当前位置的条件下， dp[i][j] +=当前位置的下面出发到终点的路径数 和 当前位置的右边出发到终点的路径数
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m=obstacleGrid.size();
+        int n=obstacleGrid[0].size();
+        vector<vector<long long>>dp(m+1,vector<long long>(n+1));
+
+        //dp[i][j]表示以当前位置为开始，有多少种路径
+        dp[m-1][n]=1;
+        for(int i=m-1;i>=0;i--)
+        {
+            for(int j=n-1;j>=0;j--)
+            {
+                if(obstacleGrid[i][j]==0)
+                {
+                    dp[i][j]=dp[i][j+1]+dp[i+1][j];
+                }
+            }
+        }
+        return dp[0][0];
+    }
+};
+/*----------------------------------------------------------------------------------------------*/
+
+
+
+https://leetcode.cn/problems/li-wu-de-zui-da-jie-zhi-lcof/?envType=study-plan-v2&envId=coding-interviews
+//珠宝的最高价值
+class Solution {
+public:
+    int jewelleryValue(vector<vector<int>>& frame) {
+        int m=frame.size();
+        int n=frame[0].size();
+        vector<vector<int>> dp(m+1,vector<int>(n+1));
+
+        for(int i=1;i<=m;i++)
+        {
+            for(int j=1;j<=n;j++)
+            {
+                dp[i][j]=max(dp[i][j-1],dp[i-1][j])+frame[i-1][j-1];
+            }
+        }
+        return dp[m][n];
+    }
+};
+/*----------------------------------------------------------------------------------------------*/
+
+https://leetcode.cn/problems/minimum-path-sum/
+//最小路径和
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m=grid.size();
+        int n=grid[0].size();
+
+        vector<vector<int>> dp(m+1,vector<int>(n+1,INT_MAX));
+        dp[m][n-1]=0;
+        for(int i=m-1;i>=0;i--)
+        {
+            for(int j=n-1;j>=0;j--)
+            {
+                dp[i][j]=min(dp[i][j+1],dp[i+1][j])+grid[i][j];
+            }
+        }
+        return dp[0][0];
+
+    }
+};
+/*----------------------------------------------------------------------------------------------*/
+https://leetcode.cn/problems/minimum-falling-path-sum/
+//下降路径最小和
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+        int n=matrix.size();
+        vector<vector<int>> dp(n+1,vector<int>(n+2,INT_MAX));
+
+        for(int j=0;j<=n+1;j++)
+        {
+            dp[0][j]=0;
+        }
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=1;j<=n;j++)
+            {
+                dp[i][j]=min(min(dp[i-1][j-1],dp[i-1][j]),dp[i-1][j+1])+matrix[i-1][j-1];
+            }
+        }
+        int ret=INT_MAX;
+        for(int i=1;i<=n;i++)
+        {
+            ret=min(ret,dp[n][i]);
+        }
+        return ret;
+    }
+};
+/*----------------------------------------------------------------------------------------------*/
+
+https://leetcode.cn/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/?envType=study-plan-v2&envId=coding-interviews
+//跳跃训练
+class Solution {
+public:
+    int trainWays(int num) {
+        if(num<2)
+        return 1;
+        int MOD=1e9+7;
+        vector<int> dp(num+1);
+        dp[0]=1;
+        dp[1]=1;
+        for(int i=2;i<=num;i++)
+        {
+            dp[i]=(dp[i-2]+dp[i-1])%MOD;
+        }
+        return dp[num];
+    }
+};
+/*----------------------------------------------------------------------------------------------*/
+
+
+https://leetcode.cn/problems/fei-bo-na-qi-shu-lie-lcof/submissions/551044510/?envType=study-plan-v2&envId=coding-interviews
+//斐波那契数列
+class Solution {
+public:
+    int fib(int n) {
+        int MOD=1e9+7;
+        if(n<2)
+        return n;
+        vector<int>dp(n+1);
+        dp[0]=0;
+        dp[1]=1;
+        for(int i=2;i<=n;i++)
+        {
+            dp[i]=((dp[i]+dp[i-1])%MOD+dp[i-2])%MOD;
+        }
+        return dp[n];
+    }
+};
