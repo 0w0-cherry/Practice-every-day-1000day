@@ -1,0 +1,98 @@
+https://leetcode.cn/problems/two-furthest-houses-with-different-colors/
+//两栋颜色不同且距离最远的房子
+class Solution {
+public:
+    int find(int left,int right,vector<int>& colors,int a)//需要传的是位置
+    {
+        int y=0;
+        for(int i=left;i<=right;i++)
+        {
+            if(colors[i]!=colors[a])
+            {
+                y=max(y,abs(a-i));
+            }
+        }
+        return y;
+    }
+    int maxDistance(vector<int>& colors) {
+        int n=colors.size();
+        int y=0;
+        for(int i=0;i<=n-1;i++)
+        {
+            y=max(y,find(0,n-1,colors,i));
+        }
+        return y;
+    }
+};
+
+https://leetcode.cn/problems/JEj789/
+//粉刷房子
+class Solution {
+public:
+    int minCost(vector<vector<int>>& costs) {
+        int n=costs.size();
+        vector<vector<int>> dp(n+1,vector<int>(3));
+        for(int i=1;i<=n;i++)
+        {
+            dp[i][0]=min(dp[i-1][1],dp[i-1][2])+costs[i-1][0];
+            dp[i][1]=min(dp[i-1][0],dp[i-1][2])+costs[i-1][1];
+            dp[i][2]=min(dp[i-1][1],dp[i-1][0])+costs[i-1][2];
+        }
+        return min(min(dp[n][1],dp[n][0]),dp[n][2]);
+    }
+};
+
+https://leetcode.cn/problems/PzWKhm/
+//打家劫舍II
+class Solution {
+public:
+int rob1(vector<int>& nums,int left,int right)
+{
+    if(left>right)
+    return 0;
+
+    int n=nums.size();
+    vector<int> f(n);
+    auto g=f;
+    f[left]=nums[left];
+    g[left]=0;
+    for(int i=left+1;i<=right;i++)
+    {
+        f[i]=g[i-1]+nums[i];
+        g[i]=max(g[i-1],f[i-1]);
+    }
+    return max(f[right],g[right]);
+}
+
+    int rob(vector<int>& nums) {
+        int n=nums.size();
+        int ret=max(nums[0]+rob1(nums,2,n-2),rob1(nums,1,n-1));
+        return ret;
+    }
+
+};
+
+
+//删除并获得点数
+https://leetcode.cn/problems/delete-and-earn/
+class Solution {
+public:
+    int deleteAndEarn(vector<int>& nums) {
+        vector<int> arr(10001);
+        for(auto e:nums)
+        {
+            arr[e]+=e;
+        }
+
+        vector<int> f(10001);
+        auto g=f;
+        f[0]=arr[0];
+        g[0]=0;
+        for(int i=1;i<=10000;i++)
+        {
+            f[i]=g[i-1]+arr[i];
+            g[i]=max(g[i-1],f[i-1]);
+        }
+        return max(f[10000],g[10000]);
+    }
+};
