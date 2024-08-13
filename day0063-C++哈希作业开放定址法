@@ -1,0 +1,145 @@
+#include<string>
+#include<vector>
+using namespace std;
+
+template<class K>
+struct HashFunc
+{
+	size_t operator()(const K& key)
+	{
+		return (size_t)key;
+	}
+};
+
+// 哈希表中支持字符串的操作
+template<>
+struct HashFunc<string>
+{
+	size_t operator()(const string& key)
+	{
+		size_t hash = 0;
+		for (auto e : key)
+		{
+			hash *= 31;
+			hash += e;
+		}
+
+		return hash;
+	}
+};
+
+// 以下采用开放定址法，即线性探测解决冲突
+namespace open_address
+{
+	enum State
+	{
+		EXIST,
+		EMPTY,
+		DELETE
+
+	};
+
+	template<class K, class V>
+	struct HashData
+	{
+		pair<K, V> _kv;
+		State _state = EMPTY;
+	};
+
+	//Hash是为了使用仿函数
+	//若值（V）为string，需要使用Hash（string）将其转换为数字
+	template<class K, class V, class Hash = HashFunc<K>>
+	class HashTable
+	{
+	public:
+		HashTable()
+		{
+			_tables.resize(10);
+		}
+
+		bool Insert(const pair<K, V>& kv)
+		{
+			if (Find(kv.first))
+				return false;
+			//如果载荷因子过大，创建新表并扩容
+			//扩容将旧表内容重新映射到新表，映射时调用Insert。由于扩容后2倍最高为0.5所以不会陷入Insert死循环
+			//交换新旧表
+			if (_n * 10 / _tables.size() > 7)
+			{
+				HashTable<K, V, Hash> newHT;
+				newHT._tables.resize(2 * _tables.size());
+				for (int i = 0; i < _tables.size(); i++)
+				{
+					if(_tables[i]._state==EXIST)
+						newHT.Insert(_tables[i]._kv);
+				}
+				swap(newHT._tables, _tables);
+			}
+			//计算hashi的位置
+			//循环进行位置偏移
+			//添加该值，并修改状态和有效数据个数
+			Hash hs;
+			size_t hashi = hs(kv.first) % _tables.size();
+			while (_tables[hashi]._state == EXIST)
+			{
+				hashi++;
+				hashi %= _tables.size();
+			}
+			_tables[hashi]._kv = kv;
+			_tables[hashi]._state = EXIST;
+			_n++;
+			return true;
+		}
+
+		HashData<K, V>* Find(const K& key)
+		{
+			Hash hs;
+			size_t hashi = hs(key) % _tables.size();
+			while (_tables[hashi]._state !=EMPTY)
+			{
+				if (_tables[hashi]._state == EXIST
+					&& _tables[hashi]._kv.first == key)
+				{
+					return &_tables[hashi];
+				}
+				++hashi;
+				hashi %= _tables.size();
+			}
+			return nullptr;
+		}
+		bool Erase(const K& key)
+		{
+			HashData<K, V>* ret = Find(key);
+			if (ret == nullptr)
+			{
+				return false;
+			}
+			else
+			{
+				ret->_state = DELETE;
+				return true;
+			}
+		}
+
+	private:
+		vector<HashData<K, V>> _tables;
+		size_t _n = 0;  // 表中存储数据个数
+	};
+	void test()
+	{
+		HashTable<string, int> HT;
+		cout<<HT.Insert({"你",10})<<endl;
+		//cout<<HT.Find("你");
+		cout << HT.Erase("你") << endl;
+		cout<<HT.Erase("好")<<endl;
+	}
+}
+
+#include<iostream>
+#include"标头.h"
+using namespace open_address;
+int main()
+{
+	test();
+	return 0;
+}
