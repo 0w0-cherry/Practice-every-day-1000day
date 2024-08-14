@@ -1,0 +1,126 @@
+https://leetcode.cn/problems/dungeon-game/description/
+//地下城游戏
+class Solution {
+public:
+    int calculateMinimumHP(vector<vector<int>>& dun) {
+        int n=dun.size();
+        int m=dun[0].size();
+        vector<vector<int>> dp(n+1,vector<int>(m+1,200000));//dp表示当前血量
+        dp[n][m-1]=1;//dp表示我来到这个房间之前的血量
+        for(int i=n-1;i>=0;i--)
+        {
+            for(int j=m-1;j>=0;j--)
+            {
+                dp[i][j]=min(dp[i+1][j],dp[i][j+1])-dun[i][j];
+                dp[i][j]=max(dp[i][j],1);
+            }
+        }
+        return dp[0][0];
+    }
+};
+
+//买卖股票的最佳时机IV
+https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/
+class Solution {
+public:
+const int INF=0x3f3f3f3f;
+    int maxProfit(int k, vector<int>& prices) {
+        int n=prices.size();
+        vector<vector<int>> f(n,vector<int>(k+1,-INF));
+        auto g=f;
+
+        f[0][0]=-prices[0];
+        g[0][0]=0;
+        for(int i=1;i<n;i++)
+        {
+            for(int j=0;j<=k;j++)
+            {
+                f[i][j]=max(f[i-1][j],g[i-1][j]-prices[i]);
+                g[i][j]=g[i-1][j];
+                if(j>=1)
+                {
+                    g[i][j]=max(g[i-1][j],f[i-1][j-1]+prices[i]);
+                }
+            }
+        }
+        int ret=0;
+        for(int i=0;i<=k;i++)
+        {
+            ret=max(ret,g[n-1][i]);
+        }
+        return ret;
+    }
+};
+
+
+//买卖股票的最佳时机III
+https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iii/
+class Solution {
+public:
+const int INF=0x3f3f3f3f;
+    int maxProfit(vector<int>& prices) {
+        int n=prices.size();
+        vector<vector<int>> f(n,vector<int>(3,-INF));//持股状态
+        auto g=f;//不持股状态
+
+        f[0][0]=-prices[0];
+        g[0][0]=0;
+        for(int i=1;i<n;i++)
+        {
+            for(int j=0;j<3;j++)
+            {
+                f[i][j]=max(f[i-1][j],g[i-1][j]-prices[i]);
+                g[i][j]=g[i-1][j];
+                if(j>=1)//至少有1笔交易，状态可因此延续
+                {
+                    g[i][j]=max(g[i-1][j],f[i-1][j-1]+prices[i]);
+                }
+            }
+        }
+        return max(max(g[n-1][0],g[n-1][1]),g[n-1][2]);
+
+    }
+};
+
+
+//买卖股票的最佳时机含手续费
+https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/description/
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        int n=prices.size();
+        vector<int> f(n);
+        auto g=f;
+
+        f[0]=-prices[0];
+        g[0]=0;
+        for(int i=1;i<n;i++)
+        {
+            f[i]=max(f[i-1],g[i-1]-prices[i]);
+            g[i]=max(g[i-1],f[i-1]+prices[i]-fee);
+        }
+        return g[n-1];
+    }
+};
+
+//买卖股票的最佳时机含冷冻期
+https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-with-cooldown/
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n=prices.size();
+        vector<int> f(n);//持股
+        auto g=f;//不持股,且不冷冻
+        auto k=f;//不持股，且冷冻
+        f[0]=-prices[0];
+        g[0]=0;
+        k[0]=0;
+        for(int i=1;i<n;i++)
+        {
+            f[i]=max(f[i-1],g[i-1]-prices[i]);
+            g[i]=max(g[i-1],k[i-1]);
+            k[i]=f[i-1]+prices[i];
+        }
+        return max(k[n-1],g[n-1]);
+    }
+};
