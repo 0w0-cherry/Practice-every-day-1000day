@@ -1,0 +1,160 @@
+https://leetcode.cn/problems/arithmetic-slices/
+//等差数列划分
+//难度：中等
+思路：
+（1）dp[i]表示以当前位置为结尾，有多少种方法。因此sum需要每次都算上dp[i]
+（2）每次均已当前位置为结尾，若满足条件，则继承抵达上一格子的所有方法数，并+1（相当于走到上一个格子后又多走一格）
+class Solution {
+public:
+    int numberOfArithmeticSlices(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> dp(n);//表示以当前位置为结尾，有多少种方法
+        int sum=0;
+        for(int i=2;i<n;i++)
+        {
+            dp[i] = nums[i]-nums[i-1]==nums[i-1]-nums[i-2]?dp[i-1]+1:0;//继承抵达上一格子的所有方法数，并+1（相当于走到上一个格子后又多走一格）
+            sum+=dp[i];
+
+        }
+        return sum;
+    }
+};
+
+https://leetcode.cn/problems/maximum-product-subarray/
+//乘积最大子数组
+//难度：中等
+情况1：最大值正数均由正数相乘得出（或单个正数）
+情况2：最大值正数得出的过程中有偶数个负数相乘得出
+情况3：数组全为负数，最大值为某个负数
+注意事项1：由于最大值可能由负数*负数得出，因此需要记录最小值
+注意事项2：最小值*一段连续的正数空间 < INT_INT，数据可能会溢出(且此时的位置及后面必然没有负数，否则数据将大于INT_MAX)
+class Solution {
+public:
+#define ll long long
+    int maxProduct(vector<int>& nums) {
+        ll n = nums.size();
+        vector<ll> maxf(n + 1);
+        auto ming = maxf;
+        ll ret = nums[0];
+        maxf[0] = nums[0];
+        ming[0] = nums[0];
+        for (ll i = 1; i < n; i++) 
+        {
+            maxf[i] = max(max((ll)nums[i], maxf[i - 1] * (ll)nums[i]),ming[i - 1] * (ll)nums[i]);
+            ming[i] = min(min((ll)nums[i], ming[i - 1] * (ll)nums[i]),maxf[i - 1] * (ll)nums[i]);
+            //最大值不可能是由小于INT_MIN*负数 得到一个大于INT_MAX的数,而最大值小于INT_MAX
+            //因此此时在i及i以后的位置必然均为非负数，否则数据将超出范围，
+            //所以可将在非负数的情况下的最小值设为当前的nums[i]，
+            //if(ming[i]<INT_MIN && nums[i]<0)
+            //{
+            //    ming[i]=nums[i];
+            //}
+            if (maxf[i] > ret)
+                ret = maxf[i];
+        }
+        return ret;
+    }
+};
+
+
+
+
+https://leetcode.cn/problems/longest-turbulent-subarray/description/
+//最长湍流子数组
+//难度：中等
+class Solution {
+public:
+    int maxTurbulenceSize(vector<int>& arr) {
+        int n=arr.size();
+        if(n==1)
+        return 1;
+        vector<vector<int>> dp(n,vector<int>(3,1));
+        int ret=0;
+        //dp[0][0]表示平稳
+        //dp[0][1]表示上升
+        //dp[0][2]表示下降
+        for(int i=1;i<n;i++)
+        {
+            if(arr[i-1]<arr[i])
+            {
+                dp[i][1]=dp[i-1][2]+1;
+            }
+            else if(arr[i-1]>arr[i])
+            {
+                dp[i][2]=dp[i-1][1]+1;
+            }
+            ret=max(max(dp[i][1],dp[i][2]),ret);
+
+        }
+        return ret;
+    }
+};
+
+https://leetcode.cn/problems/maximum-length-of-subarray-with-positive-product/
+//乘积为正数的最长子数组长度
+class Solution {
+public:
+    int getMaxLen(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> f(n+1);//连续正数长度
+        auto g=f;//连续负数长度
+
+        int ret=0;
+        for(int i=1;i<=n;i++)
+        {
+            if(nums[i-1]>0)
+            {
+                f[i]=f[i-1]+1;
+                g[i]= g[i-1]==0?0:g[i-1]+1;//若前面均无负数，则个gmin无法取到负数,因此为0
+            }
+            else if(nums[i-1]<0)
+            {
+                f[i]=g[i-1]==0?0:g[i-1]+1;//若前面均无负数，则无法由负数*负数 得到正数
+                g[i]=f[i-1]+1;
+            }
+            ret=max(ret,f[i]);
+        }
+        return ret;
+    }
+};
+
+
+
+
+
+https://leetcode.cn/problems/maximum-sum-circular-subarray/description/
+//环形子数组的最大和
+难度：中等
+
+情况1：数组最大值区间不成环，最大值gmax为中间的一段连续区间
+
+情况2：数组最大值区间成环，最大值gmax为总和-gmin
+特殊情况：sum == gmin时，sum-gmin=0（该数字在数组中可能并不存在）,此时说明数组为全负数，且无需比较，只需返回fmax(某个位置上的单个值)即可
+
+
+class Solution {
+public:
+    int maxSubarraySumCircular(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> f(n+1,0);
+        auto g=f;
+        int sum=0;
+        int fmax=-0x3f3f3f3f,gmin=0x3f3f3f3f;//10亿
+        for(int i=1;i<=n;i++)
+        {
+            int x=nums[i-1];
+            f[i]=max(0,f[i-1])+x;//重新从当前位置计算 或 延续状态
+            g[i]=min(0,g[i-1])+x;//重新从当前位置计算 或 延续状态
+
+            fmax=max(fmax,f[i]);
+            gmin=min(gmin,g[i]);
+            sum+=x;
+        }
+        //sum-gmin可能为0（该数字在数组中可能并不存在）,此时直接返回某个单个值即可
+        if(sum-gmin==0)
+            return fmax;
+        else
+            return max(fmax,sum-gmin);
+
+    }
+};
