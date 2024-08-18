@@ -1,0 +1,258 @@
+一. 什么是vector？
+1. 概念
+在C++中vector是一个自动的可变大小的数组序列容器（但不是每次插入新元素时都重新分配大小）可以存储一系列的相同元素。它是标准库<vector>中定义的模版类
+  
+2. 通用语法
+std::vector<T> vec;
+
+
+二. vector的定义和特性
+1. 元素访问
+可以通过索引来访问 vector中的元素。可以使用[]运算符或 at()函数来访问元素。（不能采用<=size()-1来访问，size()的返回值是size_t,-1表示size_t范围的最大正整数）
+  
+2. 容器大小管理 
+size()函数可获取 vector中元素的数量,  empty()函数可检查 vector是否为空。还可以使用 resize()函数调整 vector的大小。
+  
+3. 迭代器
+ vector提供了迭代器， 可以用于遍历容器中的元素。begin()函数获取指向第一个元素的迭代器，end()函数获取指向最后一个元素之后位置的迭代器。
+  
+4. vector的优缺点（对比list）
+（1）优点：自身具备高效的尾插和尾删。与list和forward_list相比支持高效的下标的随机访问
+（2） 缺点：与list和forward_list相比，头部或中间插入删除效率低，扩容有消耗
+（3）总结：需要高效随机存取使用vector；需要大量插入删除使用list；大量的尾插尾删二者均可
+
+5. 对越界的检查
+数组   ：采用抽查
+ ' [ ] '   ：使用断言检查
+ at      ：检查边界，若越界则抛异常
+
+
+三. vector的底层实现
+namespace bit
+{
+  template<class T>
+  class vector
+  {
+  private:
+    iterator _start; // 指向数据块的开始
+    iterator _finish; // 指向有效数据的尾
+    iterator _endOfStorage; // 指向存储容量的尾
+  };
+}
+
+
+四. vector的三种遍历方法
+1. 迭代器iterator
+
+vector<int> v;//定义 
+v.emplace_back(1);//插入元素1 
+v.emplace_back(2);//插入元素2
+
+vector<int>::iterator it;//使用迭代器
+    for(it=v.begin();it!=v.end();it++)
+{
+   cout<<*it<<' ';
+} 
+
+2. 下标遍历
+vector<int> v;
+v.emplace_back(1);//插入元素1 
+v.emplace_back(2);//插入元素2
+
+//错误写法，没考虑size()为0（size（）返回的是size_t）
+for(int i=0;i<=v.size()-1;i++)
+//正确写法
+for(int i=0;i<v.size();i++)
+{
+    cout<<v[i]<<' ';
+}
+
+3. 范围for循环
+vector<int> v;
+v.emplace_back(1);//插入元素1 
+v.emplace_back(2);//插入元素2
+for(auto e:v)
+{
+    cout<<e<<" ";
+}
+
+
+五. vector的多维操作
+1.  二维数组
+（1）定义
+ //方法一
+vector<vector<int>> arr1(5, vector<int>(3, 1));    //定义一个5行3列值全为1的二维vector
+
+ //方法二
+ vector<vector<int>> arr2(10);
+ for(int i=0;i<arr2.size();i++)
+ {
+     arr2[i].resize(100);//数组arr2中的每一行长度均为100（也可使用reserve）
+ }
+（2）访问
+和二维数组一样通过 [] [] 访问即可。
+for (int i = 0; i < arr.size(); i++)
+{
+    for(int j=0;j<arr[i].size();i++)
+    {
+        arr[i][j]=10;    
+    }
+}
+（3）扩容（windows一般情况下为1.5倍扩容）
+//resize（推荐）
+//reserve
+vector<vector<int>> arr;
+arr.resize(5);
+for (auto num : arr)
+{
+    num.resize(3);
+}
+
+2. 多维数组
+（1）定义
+//3维
+vector<vector<vector<int>>> tianwen(m,vector< vector<int> >(n,vector<int>(p,1)));
+//更多维度（可用来表示状态等）
+//4维
+vector<vector<vector<vector<int>>>> tianwen1(10, vector< vector<vector<int>> >(10, vector<vector<int>>(10, vector<int>(10) )) );
+vector<vector<vector<vector<int>>>> tianwen2(10, tianwen1);
+
+//5维
+vector<vector<vector<vector<vector<int>>>>> tianwen3(10, tianwen2);
+//更多维度.....
+（2）访问
+内容：略。（参考二维数组的访问操作）
+（3）扩容（windows一般情况下为1.5倍扩容）
+//resize（推荐）
+//reserve
+vector<int> arr;
+arr.resize(10);//长10
+for(int i=0;i<arr.size();i++)//此处不能用i<=arr.size()-1,size()是size_t类型，-1是该类型最大正整数
+{
+    arr[i].resize(100);//宽100
+    for(int j=0；j<arr[i].size();j++)
+    {
+        arr[i][j].resize(1000);//高1000    
+    }
+}
+
+
+六. vector排序去重
+1.去重方法
+（1）去重函数
+要去除vector中的重复元素，可使用std::unique函数，位于头文件<algorithm>中
+（2）底层实现
+原理就是不断的将后面不重复的元素覆盖前面重复的元素，并且返回最后一个不重复元素下一个元素的坐标的（迭代器），因为**end()**指向的是最后一个元素的下一个迭代器
+  
+2.具体操作：
+（1）操作流程
+std::vector<T> vec={.....};
+//操作1：对vector中的元素进行排序，使相同元素相邻
+std::sort(vec.begin(),vec.end());
+
+//操作2：std::unique将重复元素移动到vector的末尾，并返回一个指向重复元素开头的迭代器
+std::vector<int>::iterator last1=std::unique(vec,begin(),vec.end());//(类型名过于复杂时，可使用auto自动判断)
+
+//操作3：利用返回的迭代器完成一段区间的删除，并返回指向删除后的数组的最后一个元素的下一个位置
+vec.erase(last1,vec.end());
+（2）代码示例
+//代码示例：
+vector<int> array={1,4,4,4,4,7,8,5,3};
+sort(array.begin(),array.end());
+auto last=unique(array.begin(),array.end());
+array.erase(last,array.end());
+
+
+七. 成员函数一览
+1. 常用成员函数一览
+
+size()//返回返回容器中元素个数
+begin()//返回头部迭代器
+end()//返回尾部+1迭代器
+rbegin()//返回逆首部迭代器
+rend()//返回逆尾部-1迭代器
+front()//返回首个元素
+back()//返回尾部元素
+push_back()//在末尾添加一个元素
+emplace_back()//和push_back()是一样的作用
+pop_back()//弹出最后一个元素
+empty()//判断是否为空
+insert()//在指定位置插入元素
+erase()//在指定位置删除元素
+clear()//清空容器
+
+2. 成员函数（详细版）
+（1）iterator（迭代器）
+（2）capacity（容量）
+（3）element access（元素访问）
+（4）modifiers（修改器）
+
+（5）函数的具体使用
+//1.insert()
+insert(position ,x);在迭代器指定的位置前插入值为x的元素
+insert(position,n ,x);在迭代器指定的位置前插入n个值为x的元素
+insert(position,first,last);在迭代器指定的位置前插入另外一个容器的一段序列迭代器first到last
+复杂度很高，迫不得已不使用
+  
+//2.erase
+erase(position);//删除某个元素
+erase(first,end);//删除某段区间的全部元素。复杂度很高，迫不得已不使用
+
+//3.emplace和insert
+//同为插入元素，不过emplace只能插入一个元素
+//insert和emplace的区别：insert是拷贝和复制，而emplace则是直接创建一个新元素。（后者效率更高）
+vector<int> arr;
+arr.emplace(arr.begin(), 10);//在begin位置之前插入10
+
+//4.swap
+//swap将两个vector进行交换。
+arr.swap(arrs);
+
+//5.clear
+//clear清空整个vector，size变为0，但空间（capacity）仍然不变。
+arr.clear();
+
+//6.assign
+//assign修改vector，和insert操作类似，不过insert是从尾部插入，而assign则将整个vector改变。
+vector<int> arr = {5, 4, 3, 2, 1};
+vector<int> arrs = { 1, 2, 3, 4, 5 };
+
+arr.assign(10,3);//将整个vector修改为n个值为val的容器
+arr.assign(arrs.begin(),arr.end());将整个vector修改为某个容器[start, end]范围内的元素
+arr.assign(arrs,arrs+5);//将arr替换为数组arrs的一部分
+
+
+八. 迭代器失效
+1. 含义
+空间因  扩容/缩容等操作  而更新，函数内部迭代器指向改变的但传值造成外部的迭代器指向的位置没变，造成迭代器失效
+  
+2.  解决方法
+（1）引用（非库中方法）
+可加引用，但且会导致一些原先的场合无法使用(begin()传入，是临时的，具有常性，需要const修饰)
+（2）库中方法
+库中对此不做处理，因此需要额外手动对迭代器it进行更新(对于VS，若使用erase删除后，不能通过it不动来避免迭代器失效)
+迭代器失效的更新方式
+（3）代码示例：
+ //删除偶数
+void erase_even()
+{
+    std::vector<int>  v1;
+    v1.push_back(5);
+    v1.push_back(4);
+    v1.push_back(4);
+    v1.push_back(1);
+    
+    std::vector<int>::iterator it = v1.begin();
+    while (it != v1.end())
+    {
+            if (*it % 2 == 0)
+            {
+                it = v1.erase(it);//库中对迭代器的更新方式(erase后返回下一个元素的位置)
+            }
+            else
+            {
+                ++it;            
+            }
+    }
+}
+
