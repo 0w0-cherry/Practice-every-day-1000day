@@ -1,7 +1,7 @@
 一. 什么是vector？
 1. 概念
 在C++中vector是一个自动的可变大小的数组序列容器（但不是每次插入新元素时都重新分配大小）。它可以存储一系列的相同元素。它是标准库<vector>中定义的模版类
-  
+
 2. 通用语法
 std::vector<T> vec;
 
@@ -9,22 +9,22 @@ std::vector<T> vec;
 二. vector的定义和特性
 1. 元素访问
 可以通过索引来访问 vector中的元素。可以使用[]运算符或 at()函数来访问元素。（不能采用<=size()-1来访问，size()的返回值是size_t,-1表示size_t范围的最大正整数）
-  
+
 2. 容器大小管理 
-size()函数可获取 vector中元素的数量,  empty()函数可检查 vector是否为空。还可以使用 resize()函数调整 vector的大小。
-  
+size()函数可获取 vector中元素的数量,  empty()函数可检查 vector是否为空。还可以使用 resize()函数调整 vector的大小，或使用reserve为元素预留空间
+
 3. 迭代器
  vector提供了迭代器， 可以用于遍历容器中的元素。begin()函数获取指向第一个元素的迭代器，end()函数获取指向最后一个元素之后位置的迭代器。
-  
+
 4. vector的优缺点（对比list）
 （1）优点：自身具备高效的尾插和尾删。与list和forward_list相比支持高效的下标的随机访问
 （2） 缺点：与list和forward_list相比，头部或中间插入删除效率低，扩容有消耗
 （3）总结：需要高效随机存取使用vector；需要大量插入删除使用list；大量的尾插尾删二者均可
 
 5. 对越界的检查
-数组   ：采用抽查
- ' [ ] '   ：使用断言检查
- at      ：检查边界，若越界则抛异常
+数组的越界   ：采用抽查
+vector的 ' [ ] '：使用断言检查
+ at 函数         ：检查边界，若越界则抛异常
 
 
 三. vector的底层实现
@@ -143,10 +143,11 @@ for(int i=0;i<arr.size();i++)//此处不能用i<=arr.size()-1,size()是size_t类
 要去除vector中的重复元素，可使用std::unique函数，位于头文件<algorithm>中
 （2）底层实现
 原理就是不断的将后面不重复的元素覆盖前面重复的元素，并且返回最后一个不重复元素下一个元素的坐标的（迭代器），因为**end()**指向的是最后一个元素的下一个迭代器
-  
 2.具体操作：
 （1）操作流程
 std::vector<T> vec={.....};
+
+
 //操作1：对vector中的元素进行排序，使相同元素相邻
 std::sort(vec.begin(),vec.end());
 
@@ -155,6 +156,7 @@ std::vector<int>::iterator last1=std::unique(vec,begin(),vec.end());//(类型名
 
 //操作3：利用返回的迭代器完成一段区间的删除，并返回指向删除后的数组的最后一个元素的下一个位置
 vec.erase(last1,vec.end());
+
 （2）代码示例
 //代码示例：
 vector<int> array={1,4,4,4,4,7,8,5,3};
@@ -166,34 +168,33 @@ array.erase(last,array.end());
 七. 成员函数一览
 1. 常用成员函数一览
 
-size()//返回返回容器中元素个数
-begin()//返回头部迭代器
-end()//返回尾部+1迭代器
-rbegin()//返回逆首部迭代器
-rend()//返回逆尾部-1迭代器
-front()//返回首个元素
-back()//返回尾部元素
-push_back()//在末尾添加一个元素
-emplace_back()//和push_back()是一样的作用
-pop_back()//弹出最后一个元素
-empty()//判断是否为空
-insert()//在指定位置插入元素
-erase()//在指定位置删除元素
-clear()//清空容器
+size()                                //1.返回返回容器中元素个数
+begin()                               //2.返回头部迭代器
+end()                                 //3.返回尾部+1迭代器
+rbegin()                              //4.返回逆首部迭代器
+rend()                                //5.返回逆尾部-1迭代器
+front()                               //6.返回首个元素
+back()                                //7.返回尾部元素
+push_back()                           //8.在末尾添加一个元素
+emplace_back()                        //9.和push_back()是一样的作用
+pop_back()                            //10.弹出最后一个元素
+empty()                               //11.判断是否为空
+insert()                              //12.在指定位置插入元素
+erase()                               //13.在指定位置删除元素
+clear()                               //14.清空容器
 
 2. 成员函数（详细版）
 （1）iterator（迭代器）
 （2）capacity（容量）
 （3）element access（元素访问）
 （4）modifiers（修改器）
-
 （5）函数的具体使用
 //1.insert()
 insert(position ,x);在迭代器指定的位置前插入值为x的元素
 insert(position,n ,x);在迭代器指定的位置前插入n个值为x的元素
 insert(position,first,last);在迭代器指定的位置前插入另外一个容器的一段序列迭代器first到last
 复杂度很高，迫不得已不使用
-  
+
 //2.erase
 erase(position);//删除某个元素
 erase(first,end);//删除某段区间的全部元素。复杂度很高，迫不得已不使用
@@ -225,7 +226,7 @@ arr.assign(arrs,arrs+5);//将arr替换为数组arrs的一部分
 八. 迭代器失效
 1. 含义
 空间因  扩容/缩容等操作  而更新，函数内部迭代器指向改变的但传值造成外部的迭代器指向的位置没变，造成迭代器失效
-  
+
 2.  解决方法
 （1）引用（非库中方法）
 可加引用，但会导致一些原先的场合无法使用(begin()传入，是临时的，具有常性，需要const修饰)
@@ -255,4 +256,3 @@ void erase_even()
             }
     }
 }
-
