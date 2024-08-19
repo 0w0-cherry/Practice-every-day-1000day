@@ -1,0 +1,88 @@
+https://leetcode.cn/problems/longest-arithmetic-subsequence-of-given-difference/description/
+//最长定差子序列
+//难度：中等
+class Solution {
+public:
+    int longestSubsequence(vector<int>& arr, int difference) {
+        int n=arr.size();
+        map<int,int> dp;//表示以当前数为结尾的最长的长度
+        //map是一种平衡的二叉搜索树，一般是红黑树。将键（包括负数）映射到非负数的所以，支持处理任意整数值
+        int ret=1;
+        for(int i=0;i<n;i++)
+        {
+
+        dp[arr[i]]=dp[arr[i]-difference]+1;
+        ret=max(ret,dp[arr[i]]);
+        }
+        return ret;
+
+    }
+};
+
+//https://leetcode.cn/problems/number-of-longest-increasing-subsequence/
+//最长递增子序列的个数
+//难度：中等
+class Solution {
+public:
+    int findNumberOfLIS(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> len(n,1);//表示以当前位置为结尾的最长长度
+        auto count=len;//表示以当前位置为结尾的最长长度的个数
+        int maxlen=1;
+        int maxcount=1;
+        for(int i=1;i<n;i++)
+        {
+            for(int j=0;j<i;j++)
+            {
+                if(nums[j]<nums[i])
+                {
+                    if(len[i]==len[j]+1)
+                    {
+                        count[i]+=count[j];
+                    }
+                    else if(len[i]<len[j]+1)
+                    {
+                        len[i]=len[j]+1;
+                        count[i]=count[j];
+                    }
+                }
+            }
+            if(maxlen==len[i])
+            {
+                maxcount+=count[i];
+            }
+            else if(maxlen<len[i])
+            {
+                maxlen=len[i];
+                maxcount=count[i];
+            }
+        }
+        return maxcount;
+    }
+};
+
+https://leetcode.cn/problems/maximum-length-of-pair-chain/
+//最长数对链
+//难度：中等
+class Solution {
+public:
+    int findLongestChain(vector<vector<int>>& pairs) {
+        sort(pairs.begin(),pairs.end());
+    int n=pairs.size();
+    vector<int> dp(n,1);
+    int ret=1;
+    for(int i=1;i<n;i++)
+    {
+        for(int j=0;j<i;j++)
+        {
+            if(pairs[j][1]<pairs[i][0])
+            {
+                dp[i]=max(dp[i],dp[j]+1);
+            }
+        }
+        ret=max(ret,dp[i]);
+    }
+    return ret;
+    }
+
+};
