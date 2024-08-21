@@ -1,0 +1,136 @@
+一. 什么是list？
+1. 概念
+list是可以在常数范围内的任意位置进行插入和删除的的自动可变大小的序列式容器，并且该容器可以前后双向迭代。list容器以节点（node）形式存储元素，并使用指针将这些节点链接在一起，形成一个链表结构
+2. 通用语法
+std::list<T> myList;
+二.list的定义和特性
+1. list容器模版接收两个参数
+template<class T,class Allocator=std::allocator<T>>
+class list;
+（1）模版参数：T
+代表容器中存储的元素类型
+（2）模版参数：Allocator（自带缺省值）
+代表用于分配内存的分配器类型，默认为std::allocator<T>
+2. 双向性
+每个节点都包含一个指向前一个节点和后一个节点的指针，因此可以在常数时间内在链表中的任意位置进行插入、删除和访问操作
+3. 不连续存储
+链表中的节点可以再内存中的任意位置分布，不要求连续存储，因此插入和删除操作不会导致元素的移动
+4. list与vector的对比
+（1）优点：插入和删除效率高O(1)
+（2）缺点：访问和查找较慢为O(N)
+（3）对比表：
+
+（4）总结：
+需要高效随机存取使用,，不在乎插入和删除的效率则使用vector；
+需要大量插入删除使用而不在乎存取list；
+大量的尾插尾删二者均可
+三. list的底层实现
+    template<class T>
+ struct ListNode
+ {
+     ListNode<T>* _next;
+     ListNode<T>* _prev;
+     T _data;
+     ListNode(const T&x=T())
+         :_next(nullptr)
+         ,_prev(nullptr)
+         ,_data(x)
+         {} 
+ }
+ 
+ template<class T>
+    class list
+    {
+public:
+     
+
+list()
+       {
+           _head = new Node;
+           _head->_next = _head;
+           _head->_prev = _head;
+       }
+     //一般需要析构，说明需要释放空间，就需要自己写深拷贝
+     //不需要析构，一般默认浅拷贝即可
+     //特殊情况：多个指针同时指向同一位置，需要析构但只要浅拷贝
+       ~list()
+       {
+           clear();
+           delete _head;
+           _head = nullptr;
+       }
+
+
+
+
+    private:
+    Node* _head;
+    };
+四. 成员函数一览
+1. 常用成员函数一览
+begin()       //1.返回头部迭代器
+end()         //2.返回尾部+1迭代器
+rbegin()      //3.返回逆首部迭代器
+rend()        //4.返回逆尾部-1迭代器
+empty()       //5.判断是否为空
+size()        //6.返回有效节点个数
+front()       //7.返回第一个节点中的值的引用
+back()        //8.返回最后一个节点中的值的引用
+push_back()   //9.在首元素前插入值为val的元素
+pop_front()   //10.删除首元素
+push_back()   //11.尾部插入元素
+pop_back()    //12.删除尾部元素
+insert()      //13.在position位置插入元素
+erase()       //14.在position位置删除元素
+swap()        //15.交换两个list中的元素
+clear()       //16.清除list中有效元素的个数
+2. 成员函数（详细版）
+
+（1）构造函数
+list() 声明一个空列表；
+list(n) 声明一个有n个元素的列表，每个元素都是由其默认构造函数T()构造出来的
+list(n,val) 声明一个由n个元素的列表，每个元素都是由其复制构造函数T(val)得来的
+list(n,val) 声明一个和上面一样的列表
+list(first,last) 声明一个列表，其元素的初始值来源于由区间所指定的序列中的元素
+（2）begin和end
+begin()得到一个指向容器起始位置的iterator
+可以调用list容器的 end() 函数来得到list末端下一位置，相当于：int a[n]中的第n+1个位置a[n]，实际上是不存在的，不能访问，经常作为循环结束判断结束条件使用。
+（3）resize()
+调用resize(n)将list的长度改为只容纳n个元素，超出的元素将被删除，如果需要扩展那么调用默认构造函数T()将元素加到list末端。
+调用resize(n,val)，则扩展元素要调用构造函数T(val)函数进行元素构造，其余部分相同。
+（4）front() 和 back()
+front()可获得头部元素
+back()可获得尾部元素
+注意：在list非空时，不能使用，因此推荐使用front()和back()前先使用empty判空
+（5）pop_back() 和 pop_front()
+pop_back()删除最后一个元素，
+pop_front()删除第一个元素
+注意：序列必须不为空，如果当list为空的时候调用pop_back()和pop_front()会使程序崩掉。
+（6）assign()
+assign(n,val)将list中元素变为n个T(val）
+assign(l2.begin(),l2.end())将l2中的从l2.begin()到l2.end()之间的数值赋值给list
+（7）swap()
+成员函数重载
+交换两个链表：l1.swap(l2); 
+
+非成员函数重载
+交换两个链表：swap(l1,l2)
+（8）merge()
+合并两个链表并使之默认升序(也可改)，l1.merge(l2，greater<int>()); 
+调用结束后l2变为空，l1中元素包含原来l1 和 l2中的元素，并且排好序(默认是升序)
+greater<int>()可以省略，另外greater<int>()是可以变的，也可以不按升序排列。
+
+五. list的迭代器失效
+1. 含义
+空间因  扩容/缩容等操作  而更新，函数内部迭代器指向改变的但传值造成外部的迭代器指向的位置没变，造成迭代器失效
+2. 在list中的迭代器失效
+因为list的底层结构为带头结点的双向循环链表，因此在list中进行插入时是不会导致list的迭代器失效的，只有在删除时才会失效，并且失效的只是指向被删除节点的迭代器，其他迭代器不会受到影响。
+int main()
+{
+    list<int> lis={1,4,7,8,5,2,3,6,9,0};
+    list<int>::iterator it=lis.begin();
+    while(it!=lis.end())
+    {
+        lis.erase(it++);//it=lis.erase(it);
+    }
+}
