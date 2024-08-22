@@ -220,7 +220,7 @@ vector<int> arr = {5, 4, 3, 2, 1};
 vector<int> arrs = { 1, 2, 3, 4, 5 };
 
 arr.assign(10,3);//将整个vector修改为n个值为val的容器
-arr.assign(arrs.begin(),arr.end());将整个vector修改为某个容器[start, end]范围内的元素
+arr.assign(arrs.begin(),arrs.end());将整个vector修改为某个容器[start, end]范围内的元素
 arr.assign(arrs,arrs+5);//将arr替换为数组arrs的一部分
 
 
