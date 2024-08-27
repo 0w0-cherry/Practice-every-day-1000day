@@ -1,0 +1,40 @@
+一.代码编译的过程
+源文件--预处理--编译--汇编--链接--exe可执行程序
+
+二.main函数
+1. 入口
+main函数是主函数，是程序的入口，必须有，且仅有一个
+所有的C语言代码都从main函数的第一行开始执行
+2. 写法
+1.古老写法，不推荐
+void main()
+{
+    ;
+}
+2.推荐的三种写法
+//1.
+int main()
+{
+    return 0;
+}
+
+//2.
+int main(void)//void明确main函数不接收参数
+{
+    return 0;
+}
+
+//3.
+int main(int argc, char* argv[])//int argc, char* argv[]是在指定main函数的参数
+{
+    return 0;
+}
+三.数据类型及其大小
+C语言标准规定：long long >= long >= int > short > char （注意“ = ”）
+数据类型类型名大小（单位/字节）char字符数据类型1short短整型2int整型4long长整型4（linux64位下是8）long long更长的整型8float单精度浮点数4double双精度浮点数8void*指针4（win64和linux64位下是8）
+
+四.变量的命名
+- 只能由字母、数字、和下划线（ _ ）组成
+- 不能以数字开头
+- 长度不能超过63个字符
+- 变量的名字尽量有意义
