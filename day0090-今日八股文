@@ -1,0 +1,19 @@
+day4
+1.switch(c)语句中，c可以是char，但不能是float
+2.switch语句中default可以放在任意位置
+3.switch语句中case后面的表达式只能是整型常量表达式
+4.使用循环+scanf/getchar 需要额外使用一次getchar将换行符过滤掉
+5.使用 辗转相除法 可求最大公约数
+int main()
+{
+    int m=0,n=0;
+    scanf("%d %d",&m,&n);
+    int r=0;
+    while(r=m%n)
+    {
+        m=n;
+        n=r;    
+    }
+    printf("%d\n",n);//输出最大公约数
+    return 0;
+}
