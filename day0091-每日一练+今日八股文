@@ -1,0 +1,43 @@
+day5
+1.字符数组初始化时给0，默认转换为字符'\0'
+int arr[20]={0};//数组中存储的0均转化为'\0'
+2.strcpy函数
+功能：拷贝字符串
+返回值：若成功拷贝，则返回目标空间的起始地址
+3.memset函数
+功能：将一段字符串的前n个字符设置成m字符
+4.在同一个工程文件中，若在一个源文件中定义一个函数，则在另一个源文件中只需声明就可以使用
+
+
+  //每日一练
+  //printf的返回值
+  https://www.nowcoder.com/practice/a19ef1d8e55c4cc786f11cbf6b2fde61?tpId=107&&tqId=33290&rp=1&ru=/ta/beginner-programmers&qru=/ta/beginner-programmers/question-ranking
+  #include <stdio.h>
+
+int main() {
+    int a=printf("Hello world!");
+    printf("\n%d\n",a);
+    return 0;
+}
+
+//学生基本信息的输入输出
+https://www.nowcoder.com/practice/58b6a69b4bf943b49d2cd3c15770b9fd?tpId=107&&tqId=33292&rp=1&ru=/ta/beginner-programmers&qru=/ta/beginner-programmers/question-ranking
+int main() {
+    int a;
+    float b,c,d;
+    scanf("%d;%f,%f,%f",&a,&b,&c,&d);
+    printf("The each subject score of No. %d is %.2lf, %.2lf, %.2lf.",a,b,c,d);
+    return 0;
+}
+
+//判断是否是大小写字母
+https://www.nowcoder.com/practice/44d2d63103664913bc243d3836b4f341?tpId=107&&tqId=33316&rp=1&ru=/ta/beginner-programmers&qru=/ta/beginner-programmers/question-ranking
+int main() {
+    char a;
+    scanf("%c",&a);
+    if ((a>='a' && a<='z')||(a>='A'&&a<='Z') )
+    printf("YES");
+    else
+    printf("NO");
+    return 0;
+}
