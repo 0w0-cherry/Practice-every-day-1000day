@@ -1,0 +1,61 @@
+day5
+1.字符数组初始化时给0，默认转换为字符'\0'
+int arr[20]={0};//数组中存储的0均转化为'\0'
+2.strcpy函数
+功能：拷贝字符串
+返回值：若成功拷贝，则返回目标空间的起始地址
+3.memset函数
+功能：将一段字符串的前n个字符设置成m字符
+4.在同一个工程文件中，若在一个源文件中定义一个函数，则在另一个源文件中只需声明就可以使用
+
+day6
+1.布尔类型_Bool在源码中被#define定义为bool，因此_Bool和bool都可以代表布尔类型
+2.链式访问：将一个函数的返回值作为参数传递给另一个函数
+int main()
+{
+    printf("%d",printf("%d",printf("43")));
+    return 0;
+}
+3.printf函数的返回值：成功在屏幕上打印的字符的数量（包括换行符等不可见字符）
+
+
+//二分查找及平均值优化
+#include<iostream>
+#include<bits/stdc++.h>
+using namespace std;
+//不能使用bool作为返回值类型的原因：没找到和找到的下标为0的结果重合，导致返回0时存在歧义
+int binary_search(int arr[], int key, int sz)
+{
+	int left = 0;
+	int right = sz - 1;
+	while (left <= right)
+	{
+		//int mid = (left + right) / 2;//此方法不靠谱，求平均值存在溢出的情况
+		//优化求平均值
+		int mid = left + (right - left) / 2;
+		if (arr[mid] < arr[key])
+		{
+			left = mid + 1;
+		}
+		else if (arr[mid] > arr[key])
+		{
+			right = mid - 1;
+		}
+		else
+		{
+			return mid;
+		}
+	}
+	return -1;
+}
+int main()
+{
+	int arr[10] = { 1,2,3,4,5,6,7,8,9,10 };
+	int sz = sizeof(arr) / sizeof(arr[0]);
+	int k = 0;//k是下标
+	scanf("%d", &k);
+
+	int ret = binary_search(arr, k, sz);
+
+	return 0;
+}
