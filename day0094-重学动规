@@ -1,0 +1,173 @@
+//1.买卖股票的最佳时机
+https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& prices) {
+        int n=prices.size();
+        //需要对f的第一行初始化均为-prices[0],表示多次买了又卖，最后又买入持股
+        vector<vector<int>> f(n,vector<int>(k+1,-prices[0]));//持股
+        vector<vector<int>> g(n,vector<int>(k+1));//不持股
+
+        for(int i=1;i<n;i++)//第几天
+        {
+            for(int j=0;j<=k;j++)//交易次数
+            {
+                f[i][j]=max(f[i-1][j],g[i-1][j]-prices[i]);
+                g[i][j]=g[i-1][j];
+                if(j>=1)
+                {
+                    g[i][j]=max(g[i][j],f[i-1][j-1]+prices[i]);
+                }
+            }
+        }
+        //由于可在一天内反复卖出买入，增加交易次数
+        //因此最大利润可直接看最后一天满交易次数的 g[n-1][k]
+        return g[n-1][k];
+
+    }
+};
+
+//2.最大子数组和
+https://leetcode.cn/problems/maximum-subarray/
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> dp(n);
+        dp[0]=nums[0];
+        for(int i=1;i<n;i++)
+        {
+            dp[i]=max(nums[i],dp[i-1]+nums[i]);
+        }
+        int Max=dp[0];
+        for(int i=1;i<n;i++)
+        {
+            Max=max(Max,dp[i]);
+        }
+        return Max;
+    }
+};
+
+//3.环形子数组最大和
+https://leetcode.cn/problems/maximum-sum-circular-subarray/
+class Solution {
+public:
+    int maxSubarraySumCircular(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> f(n+1);
+        auto g=f;
+        int fmax=INT_MIN;
+        int gmin=INT_MAX;
+        int sum=0;
+
+        for(int i=1;i<=n;i++)
+        {
+            int x=nums[i-1];
+            f[i]=max(x,f[i-1]+x);
+            g[i]=min(x,g[i-1]+x);
+
+            fmax=max(fmax,f[i]);
+            gmin=min(gmin,g[i]);
+            sum+=x;
+        }
+        if(sum==gmin)
+        return fmax;
+        else
+        return max(sum-gmin,fmax);
+    }
+};
+
+//4.乘积最大子数组
+//https://leetcode.cn/problems/maximum-product-subarray/
+class Solution
+{
+public:
+    int maxProduct(vector<int> &nums)
+    {
+        int n = nums.size();
+        // f数组用于记录以当前元素结尾的连续子数组的最大乘积
+        // g数组用于记录以当前元素结尾的连续子数组的最小乘积
+        // 之所以需要同时记录最大和最小乘积，是因为数组中存在负数，负数乘最小乘积可能变成最大乘积
+        vector<int> f(n + 1), g(n + 1);
+
+        // 初始化f[0]和g[0]为1，这是为了方便后续的递推计算，相当于边界条件设定
+        f[0] = 1;
+        g[0] = 1;
+
+        // Max用于记录整个过程中出现的最大乘积值，初始化为最小整数，方便后续比较更新
+        int Max = INT_MIN;
+
+        // 遍历数组nums，从索引为1的位置开始（对应实际元素的索引是i - 1）
+        for (int i = 1; i <= n; i++)
+        {
+            // 如果当前元素nums[i - 1]小于0，也就是遇到了负数
+            if (nums[i - 1] < 0)
+            {
+                // 因为遇到了负数，当前位置的最大乘积可能是由之前的最小乘积乘以这个负数得到
+                f[i] = g[i - 1] * nums[i - 1];
+                // 而当前位置的最小乘积则需要在之前的最大乘积乘以这个负数和这个负数本身之间取较小值
+                g[i] = min(f[i - 1] * nums[i - 1], nums[i - 1]);
+            }
+            // 如果当前元素nums[i - 1]大于0，也就是遇到了正数
+            else if (nums[i - 1] > 0)
+            {
+                // 当前位置的最大乘积就是在之前的最大乘积乘以这个正数和这个正数本身之间取较大值
+                f[i] = max(f[i - 1] * nums[i - 1], nums[i - 1]);
+                // 当前位置的最小乘积就是之前的最小乘积乘以这个正数
+                g[i] = g[i - 1] * nums[i - 1];
+            }
+
+            // 更新全局最大乘积值Max，取当前的Max和新计算出的f[i]中的较大值
+            Max = max(Max, f[i]);
+        }
+
+        // 返回整个数组中连续子数组乘积的最大值
+        return Max;
+    }
+};
+方法二：暴力
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> f(n+1),g(n+1);
+        f[0]=1;
+        g[0]=1;
+        int Max=INT_MIN;
+        for(int i=1;i<=n;i++)
+        {
+            f[i]=max(max(nums[i-1],f[i-1]*nums[i-1]),g[i-1]*nums[i-1]);
+            g[i]=min(min(nums[i-1],g[i-1]*nums[i-1]),f[i-1]*nums[i-1]);
+            Max=max(Max,f[i]);
+        }
+        return Max;
+    }
+};
+
+
+//5.乘积为正数的最长子数组长度
+class Solution {
+public:
+    int getMaxLen(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> f(n+1);//连续正数长度
+        auto g=f;//连续负数长度
+        int ret=0;
+
+        for(int i=1;i<=n;i++)
+        {
+            if(nums[i-1]>0)
+            {
+                f[i]=f[i-1]+1;//无需判断直接延续
+                g[i]=g[i-1]==0?0:g[i-1]+1;//需要判断重置还是延续
+            }
+            else if(nums[i-1]<0)
+            {
+                f[i]=g[i-1]==0?0:g[i-1]+1;//需要判断延续还是重置
+                g[i]=f[i-1]+1;//直接延续
+            }
+            ret=max(ret,f[i]);
+        }
+    return ret;
+    }
+};
