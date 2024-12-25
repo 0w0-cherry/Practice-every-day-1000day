@@ -146,6 +146,7 @@ public:
 
 
 //5.乘积为正数的最长子数组长度
+https://leetcode.cn/problems/maximum-length-of-subarray-with-positive-product/description/
 class Solution {
 public:
     int getMaxLen(vector<int>& nums) {
