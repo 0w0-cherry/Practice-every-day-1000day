@@ -21,7 +21,7 @@ public:
     }
 };
 
-//摆动序列
+//2.摆动序列
 https://leetcode.cn/problems/wiggle-subsequence/
 class Solution {
 public:
@@ -46,5 +46,46 @@ public:
             }
         }
         return ret;
+    }
+};
+
+
+//3.最长递增子序列的个数
+https://leetcode.cn/problems/number-of-longest-increasing-subsequence/
+class Solution {
+public:
+    int findNumberOfLIS(vector<int>& nums) {
+        int n=nums.size();
+        vector<int> len(n,1);
+        auto count=len;
+        int maxlen=1;
+        int maxcount=1;
+        for(int i=1;i<n;i++)
+        {
+            for(int j=0;j<i;j++)
+            {
+                if(nums[j]<nums[i])
+                {
+                    if(len[i]==len[j]+1)
+                    {
+                        count[i]+=count[j];
+                    }
+                    else if(len[j]+1>len[i])
+                    {
+                        len[i]=len[j]+1;
+                        count[i]=count[j];
+                    }
+                }
+            }
+            if(len[i]==maxlen)
+            {
+                maxcount+=count[i];
+            }
+            else if(len[i]>maxlen)
+            {
+                maxcount=count[i];
+            }
+        }
+        return maxcount;
     }
 };
