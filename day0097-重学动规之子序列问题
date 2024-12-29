@@ -1,0 +1,114 @@
+//最长数对链
+https://leetcode.cn/problems/maximum-length-of-pair-chain/
+class Solution {
+public:
+    int findLongestChain(vector<vector<int>>& p) {
+        sort(p.begin(),p.end());
+        int n=p.size();
+        vector<int> dp(n,1);//
+        int retlen=1;
+        for(int i=1;i<n;i++)
+        {
+            for(int j=0;j<i;j++)
+            {
+                if(p[j][1]<p[i][0])
+                {
+                    dp[i]=max(dp[i],dp[j]+1);
+                }
+            }
+            retlen=max(retlen,dp[i]);
+        }
+        return retlen;
+    }
+};
+
+
+//最长定差子序列
+https://leetcode.cn/problems/longest-arithmetic-subsequence-of-given-difference/
+class Solution {
+public:
+    int longestSubsequence(vector<int>& arr, int difference) {
+        int n=arr.size();
+        unordered_map<int,int> hash(n);
+        int retlen=1;
+        for(int i=0;i<n;i++)
+        {
+            hash[arr[i]]=hash[arr[i]-difference]+1;
+            //hash第一个键值对应arr[i]
+            //hash第二个键值对应以arr[i]为结尾的最长长度
+            //hash arr的值-difference对应与arr[i]相差difference的值作为结尾的最长长度
+            retlen=max(retlen,hash[arr[i]]);
+        }
+        return retlen;
+    }
+};
+
+
+//最长等差数列
+https://leetcode.cn/problems/longest-arithmetic-subsequence/
+class Solution {
+public:
+    int longestArithSeqLength(vector<int>& nums) {
+        unordered_map<int,int> hash;
+        int n=nums.size();
+        //由于数组无序，所以这样写会导致答案被覆盖
+        //for(int i=0;i<n;i++)
+        //{
+        //    hash[nums[i]]=i;
+        //}
+
+        vector<vector<int>> dp(n,vector<int>(n,2));
+        int retlen=2;
+        for(int i=0;i<n-1;i++)//i==0时，会先将数据放入一次哈希表
+        {
+            for(int j=i+1;j<n;j++)
+            {
+                int a=2*nums[i]-nums[j];
+                if(hash.count(a))
+                {
+                    dp[i][j]=dp[hash[a]][i]+1;//使用的是已被放入哈希表中的前面的数据
+                }
+                retlen=max(retlen,dp[i][j]);
+            }
+            //类似滚动数组
+            hash[nums[i]]=i;
+        }
+        return retlen;
+    }
+};
+
+//等差数列划分II - 子序列
+https://leetcode.cn/problems/arithmetic-slices-ii-subsequence/
+class Solution {
+public:
+    int numberOfArithmeticSlices(vector<int>& nums) {
+        int n=nums.size();
+        unordered_map<long long,vector<int>> hash;//此处的long long是由于下面的a
+        for(int i=0;i<n;i++)
+        {
+            hash[nums[i]].push_back(i);
+        }
+
+        vector<vector<int>> dp(n,vector<int>(n));
+        int ret=0;
+        for(int j=2;j<n;j++)
+        {
+            for(int i=1;i<j;i++)
+            {
+                long long a=(long long)2*nums[i]-nums[j];//此处可能该a不存在，数据溢出
+                if(hash.count(a))
+                {
+                    for(auto e:hash[a])
+                    {
+                        if(e<i)
+                        {
+                            dp[i][j]+=dp[e][i]+1;
+                        }
+                    }
+                }
+                    ret+=dp[i][j];
+            }
+        }
+        return ret;
+    }
+};
