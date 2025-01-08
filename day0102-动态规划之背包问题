@@ -84,3 +84,25 @@ public:
         return dp[n][a];
     }
 };
+//空间优化
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int sum=0;
+        for(auto s:nums) sum+=s;
+        int a=(sum+target)/2;
+        if((sum+target)%2==1 || a<0) return 0;
+
+        int n=nums.size();
+         vector<int> dp(a+1);
+        dp[0]=1;
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=a;j>=nums[i-1];j--)
+            {
+                dp[j]+=dp[j-nums[i-1]];
+            }
+        }
+        return dp[a];
+    }
+};
