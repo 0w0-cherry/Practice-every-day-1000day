@@ -1,5 +1,23 @@
 //01背包
 https://www.nowcoder.com/practice/fd55637d3f24484e96dad9e992d3f62e?tpId=230&tqId=38964&ru=/exam/oj
+题目一：01背包
+v[i]表示第 i 个物品的体积，w[i] 表示价值
+
+1.求这个背包至多能装多大价值的物品？
+方法：
+（1）对于1，dp[i][j]表示从前i个物品中挑选总体积不超过j的所有选法中，能挑出来的最大价值
+（2）状态转移方程分为：选这个位置的物品 和 不选这个位置的物品
+不选：dp[i-1][j]
+选：条件 j - v[i] >=0 , dp[i-1][ j-v[i] ] + w [i]
+
+2.若背包恰好装满，求至多能装多大价值的物品？
+方法：
+（1）对于2，dp[i][j]表示从前i个物品中选择总体积恰好为j的所有选法中，能挑出来的最大价值
+（2）状态转移方程分为：选这个位置的物品 和 不选这个位置的物品
+不选：dp[i-1][j]，若不能装满则为-1（须在初始化时搞定）
+选：条件 j - v[i] >=0&& dp[ i -1 ][ j-v[i] ] != -1（表示有足够的空间，且能装满 j - v[i] 大小的空间），dp[i-1][ j-v[i] ] + w [i]
+注意：dp[ i -1 ][ j-v[i] ] != -1若不判断-1+w[i]可能会超了 dp[i][j] 导致求max错误
+
 #include <iostream>
 using namespace std;
 
@@ -7,20 +25,90 @@ const int N=1010;
 int n,V, v[N],w[N];
 int dp[N][N];
 int main() {
+    //读入数据
     cin>>n>>V;
     for(int i=1;i<=n;i++)
     {
         cin>>v[i]>>w[i];
+    }
+    //第一问
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=1;j<=V;j++)
+        {
+            dp[i][j]=dp[i-1][j];
+            if(j-v[i]>=0)//j-v[i]不一定存在
+            dp[i][j]=max(dp[i][j],dp[i-1][j-v[i]]+w[i]);
+            //dp[i][j]表示从前i个物品中挑选总体积不超过j的所有选法中，能挑出来的最大价值
+        }
+    }
+    cout<<dp[n][V]<<endl;
+    
+    //第二问
+    //约定，若该背包无法装满，则置为-1
+    #include<string.h>
+    memset(dp,0,sizeof(dp));
+    //dp[i][j]表示从前i个物品中选择总体积恰好为j的所有选法中，能挑出来的最大价值
+    for(int j=1;j<=V;j++)
+    {
+        dp[0][j]=-1;
     }
     for(int i=1;i<=n;i++)
     {
         for(int j=1;j<=V;j++)
         {
             dp[i][j]=dp[i-1][j];
-            if(j-v[i]>=0)
+            if(j-v[i]>=0 && dp[i-1][j-v[i]]!=-1)
+            //表示有足够的空间，且能装满 j - v[i] 大小的空间
+            //dp[i-1][j-v[i]]!=-1若不判断-1+w[i]可能会超了dp[i][j]导致下面求max错误
             dp[i][j]=max(dp[i][j],dp[i-1][j-v[i]]+w[i]);
         }
     }
-    cout<<dp[n][V]<<endl;
+    cout<<(dp[n][V] == -1? 0:dp[n][V])<<endl;
+    return 0;
+}
 
+
+
+优化
+利用滚动数组做空间上的优化
+#include <iostream>
+#include<string.h>
+using namespace std;
+
+const int N=1010;
+int n,V, v[N],w[N];
+int dp[N];
+int main() {
+    //读入数据
+    cin>>n>>V;
+    for(int i=1;i<=n;i++)
+    {
+        cin>>v[i]>>w[i];
+    }
+    //第一问
+    //删除所有的横坐标
+    //修改j的遍历顺序
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=V;j>=v[i];j--)
+        {
+            //当第一次遇到j<v[i]情况后，后面的情况无需考虑
+            dp[j]=max(dp[j],dp[j-v[i]]+w[i]);
+        }
+    }
+    cout<<dp[V]<<endl;
+    //第二问
+    memset(dp,0,sizeof(dp));
+    for(int j=1;j<=V;j++) dp[j]=-1;
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=V;j>=v[i];j--)
+        {
+            if(dp[j-v[i]]!=-1)
+            dp[j]=max(dp[j],dp[j-v[i]]+w[i]);
+        }
+    }
+    cout<<(dp[V] == -1? 0:dp[V])<<endl;
+    return 0;
 }
