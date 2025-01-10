@@ -1,0 +1,192 @@
+//1. 完全背包
+https://www.nowcoder.com/practice/237ae40ea1e84d8980c1d5666d1c53bc?tpId=230&tqId=38965&ru=/exam/oj
+#include <iostream>
+using namespace std;
+
+int n,V;
+const int N=1010;
+int v[N],w[N];
+int dp[N][N];
+
+int main() {
+    //输入数据
+    cin>>n>>V;
+    for(int i=1;i<=n;i++)
+    {
+        cin>>v[i]>>w[i];
+    }
+    //第一问
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=0;j<=V;j++)
+        {
+            dp[i][j] = dp[i-1][j];
+            if(j-v[i]>=0)
+            {
+                dp[i][j]=max(dp[i][j],dp[i][j-v[i]]+w[i]);
+            }
+        }
+    }
+    cout<<dp[n][V]<<endl;
+    //第二问
+    for(int j=1;j<=V;j++) dp[0][j]=-1;
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=0;j<=V;j++)
+        {
+            dp[i][j]=dp[i-1][j];
+            if(j-v[i]>=0&&dp[i][j-v[i]]!=-1)
+            {
+                dp[i][j]=max(dp[i][j],dp[i][j-v[i]]+w[i]);
+            }
+        }
+    }
+    cout<<(dp[n][V]==-1?0:dp[n][V]);
+    return 0;
+}
+// 64 位输出请用 printf("%lld")
+空间优化
+#include <iostream>
+using namespace std;
+
+int n,V;
+const int N=1010;
+int v[N],w[N];
+int dp[N];
+
+int main() {
+    //输入数据
+    cin>>n>>V;
+    for(int i=1;i<=n;i++)
+    {
+        cin>>v[i]>>w[i];
+    }
+    //第一问
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=v[i];j<=V;j++)
+        {
+            dp[j]=max(dp[j],dp[j-v[i]]+w[i]);
+        }
+    }
+    cout<<dp[V]<<endl;
+    //第二问
+    for(int j=1;j<=V;j++) dp[j]=-0x3f3f3f3f;//令状态足够小，求max必为小的一方
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=v[i];j<=V;j++)//要保证j-v[i]>=0
+        {
+            dp[j]=max(dp[j],dp[j-v[i]]+w[i]);
+        }
+    }
+    cout<<(dp[V]==-1?0:dp[V])<<endl;
+    return 0;
+}
+
+//2. 零钱兑换
+https://leetcode.cn/problems/coin-change/
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        int n=coins.size();
+        vector<vector<int>> dp(n+1,vector<int>(amount+1));
+        for(int j=1;j<=amount;j++) dp[0][j] =0x3f3f3f3f ;
+        //保证数字足够大超出范围，不影响求min。否则1处额外判断
+
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=0;j<=amount;j++)
+            {
+                dp[i][j]=dp[i-1][j];
+                //1.if(j-coins[i-1]>=0 && dp[i][j-coins[i-1]]!=0x3f3f3f3f)
+                if(j-coins[i-1]>=0)
+                {
+                    dp[i][j]=min(dp[i][j],dp[i][j-coins[i-1]]+1);
+                }
+            }
+        }
+        return dp[n][amount]==0x3f3f3f3f? -1:dp[n][amount];
+    }
+};
+空间优化
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        const int INF = 0x3f3f3f3f;
+        int n=coins.size();
+        vector<int> dp(amount+1,INF);
+        dp[0]=0;
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=coins[i-1];j<=amount;j++)
+            {
+                dp[j]=min(dp[j],dp[j-coins[i-1]]+1);
+            }
+        }
+        return dp[amount]==INF? -1:dp[amount];
+    }
+};
+
+//3.零钱兑换II
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        int n=coins.size();
+        vector<vector<double>> dp(n+1,vector<double>(amount+1));
+        dp[0][0]=1;
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=0;j<=amount;j++)
+            {
+                dp[i][j]=dp[i-1][j];
+                if(j-coins[i-1]>=0)
+                dp[i][j]+=dp[i][j-coins[i-1]];
+            }
+        }
+        return dp[n][amount];
+    }
+};
+
+//4.完全平方数
+class Solution {
+public:
+const int INF = 0x3f3f3f3f;
+    int numSquares(int n) {
+        int x=sqrt(n);
+        vector<vector<int>> dp(x+1,vector<int>(n+1));
+        for(int j=1;j<=n;j++) dp[0][j]=INF;
+
+        for(int i=1;i<=x;i++)
+        {
+            for(int j=0;j<=n;j++)
+            {
+                //int k=i*i;
+                dp[i][j]=dp[i-1][j];
+                for(int k=1;k*k<=j;k++)
+                {
+                    if(j-k>=0)
+                    dp[i][j]=min(dp[i][j],dp[i][j-k]+1);
+                }
+            }
+        }
+        return dp[x][n];
+    }
+};
+//空间优化
+class Solution {
+public:
+const int INF = 0x3f3f3f3f;
+    int numSquares(int n) {
+        int x=sqrt(n);
+        vector<int> dp (n+1,INF);
+        dp[0]=0;
+        for(int i=1;i<=x;i++)
+        {
+            for(int j=i*i;j<=n;j++)
+            {
+                dp[j]=min(dp[j],dp[j-i*i]+1);
+            }
+        }
+        return dp[n];
+    }
+};
