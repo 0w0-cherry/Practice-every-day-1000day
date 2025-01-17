@@ -1,0 +1,215 @@
+//扫雷.h
+#pragma once
+#include<iostream>
+#include<vector>
+#include<stdlib.h>
+#include<time.h>
+using namespace std;
+
+#define ROW 9+2     //行
+#define COLUMN 9+2  //列
+
+#define SIMPLE_DIFFICULT 10
+//初始化游戏和答案界面
+void InitInterface(vector<vector<char>>& interface, int row, int column, char target);
+//打印游戏界面
+void PrintGameInterface(vector<vector<char>> interface, int row, int column);
+
+//布置地雷
+void LayMine(vector<vector<char>>& anwser, int row, int column);
+//排查地雷
+void FindMine(vector<vector<char>>& game, vector<vector<char>> anwser, int row, int column);
+
+
+
+
+
+
+
+
+
+
+//扫雷.cpp
+#define _CRT_SECURE_NO_WARNINGS 1
+#include"扫雷.h"
+
+void InitInterface(vector<vector<char>>& interface, int row, int column, char target)
+{
+	for (int i = 0; i < interface.size(); i++)
+	{
+		for (int j = 0; j < interface[0].size(); j++)
+		{
+			interface[i][j] = target;
+		}
+	}
+}
+void PrintGameInterface(vector<vector<char>> interface,int row,int column)
+{
+	cout << "------扫雷游戏------"<<endl;
+	for (int j = 0; j <= column; j++)
+	{
+		cout << j << " ";
+	}
+	cout << endl;
+	for (int i = 1; i <= row; i++)
+	{
+		cout << i << " ";
+		for (int j = 1; j <= column; j++)
+		{
+			cout << interface[i][j] << " ";
+		}
+		cout << endl;
+	}
+	cout << "--------------------" << endl;
+}
+void LayMine(vector<vector<char>>& anwser, int row, int column)
+{
+	int count = SIMPLE_DIFFICULT;
+	while (count)
+	{
+		int x = rand() % row + 1;
+		int y = rand() % column + 1;
+		if (anwser[x][y] == '0')
+		{
+			anwser[x][y] = '1';
+			count--;
+		}
+	}
+}
+int GetMineCount(vector<vector<char>> interface, int x, int y)
+{
+	int count = 0;
+	for (int i = y - 1; i <= y + 1; i++)
+	{
+		for (int j = x - 1; j <= x + 1; j++)
+		{
+			if (interface[i][j] == '1')
+			{
+				count++;
+			}
+		}
+	}
+	return count;
+}
+void BoomBlank(vector<vector<char>>& game, vector<vector<char>>& answer, int x, int y,int row,int column,int* win)
+{
+	if (game[y][x] == '0')
+	{
+		for (int i = y - 1; i <=y + 1; i++)
+		{
+			for (int j = x - 1; j <= x + 1; j++)
+			{
+				if ((i >= 1 && i <= row && j >= 1 && j <= column)//未越界
+					&& (game[i][j] == '*' &&answer[i][j]!='1'))//当前没被探查过且不是雷
+				{
+					int count = GetMineCount(answer, j, i);
+					game[i][j] = count + '0';
+					win++;
+					BoomBlank(game, answer, j, i, row, column,win);
+				}
+			}
+		}
+	}
+}
+void FindMine(vector<vector<char>>& game, vector<vector<char>> answer, int row, int column)
+{
+	int win = 0;
+	while (win< row*column-SIMPLE_DIFFICULT)
+	{
+		int x, y;
+		cout << "请输入要排查的坐标：";
+		cin >> y >> x;
+		cout << endl;
+		if (x >= 1 && x <= column && y >= 1 && y <= row)
+		{
+			if (answer[y][x] == '1')
+			{
+				cout << "你被雷炸死了，游戏结束" << endl;
+				PrintGameInterface(answer, row, column);
+				cout << endl<<endl;
+				break;
+			}
+			else
+			{
+				win++;
+				int count = GetMineCount(answer, x, y);
+				game[y][x] = count + '0';
+				BoomBlank(game,answer, x, y,row,column,&win);//该位置是空白格子，需要连环炸开
+				PrintGameInterface(game, row, column);
+			}
+		}
+		else
+		{
+			cout << "输入无效坐标，请重新输入" << endl;
+		}
+	}
+	if (win == row * column - SIMPLE_DIFFICULT)
+	{
+		PrintGameInterface(answer, row, column);
+		cout << "恭喜通关！！！" << endl<<endl;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+//text.c
+#define _CRT_SECURE_NO_WARNINGS 1
+#include"扫雷.h"
+
+void menu()
+{
+	cout << "*************************" << endl;
+	cout << "******  1.开始游戏  *****" << endl;
+	cout << "******  0.退出游戏  *****" << endl;
+	cout << "*************************" << endl;
+
+}
+void game()
+{
+	vector<vector<char>> game_interface(ROW, vector<char>(COLUMN));
+	vector<vector<char>> answer_interface(ROW, vector<char>(COLUMN));
+	int valid_row = game_interface .size()- 2;
+	int valid_column = game_interface[0].size() - 2;
+	//初始化
+	InitInterface(game_interface, game_interface.size(), game_interface[0].size(), '*');
+	InitInterface(answer_interface, answer_interface.size(), answer_interface[0].size(), '0');
+	//游戏界面打印
+	PrintGameInterface(game_interface, valid_row, valid_column);
+	//布置雷
+	LayMine(answer_interface, valid_row, valid_column);
+	PrintGameInterface(answer_interface, valid_row, valid_column);
+	//排查雷
+	FindMine(game_interface, answer_interface, valid_row, valid_column);
+}
+
+int main()
+{
+	int input;
+	srand((unsigned int)time(NULL));
+	do {
+		menu();
+		printf("请选择：");
+		scanf("%d", &input);
+		switch (input)
+		{
+		case 1:
+			game();
+			break;
+		case 0:
+			break;
+		default:
+			cout << "输入错误，请重新输入" << endl;
+			break;
+		}
+	} while (input);
+	return 0;
+}
