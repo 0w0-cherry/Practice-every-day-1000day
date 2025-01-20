@@ -1,0 +1,55 @@
+day10
+1.递归的限制条件
+（1）递归存在限制条件，当满足条件，递归不再继续
+（2）每次递归调用后会越来越接近限制条件
+2.递归层次太深可能会造成栈溢出
+栈区   系统自动分配的空间，只要不特殊声明，就定义在栈区，函数的区域也在栈上（const常变量不改变存储位置）。栈是向下增长的（高地址向低地址增长）。
+堆区   使用动态内存分配的方式可以申请堆空间，用完要手动释放。堆是向上增长的（低地址向高地址增长）
+全局区 全局变量、静态变量（static修饰的局部静态变量也存储在这里）
+常量区 代码中的数字，字符等常量，例如’a’，—1.2等
+代码区 存放可执行代码，常量只读不写
+
+  
+#include<iostream>
+using namespace std;
+//1.递归打印阶乘
+int Print1(int n)
+{
+	if (n <= 0)
+		return 1;
+	else
+		return n * Print1(n-1);
+}
+//2.递归正序打印数字
+//易错写法
+void Print2_false(int n)
+{
+	if (n >= 10)
+		Print2_false(n / 10);
+	else
+		cout << n % 10 << " ";
+}
+//正确写法
+void Print2(int n)
+{
+	if (n >= 10)
+		Print2(n / 10);
+	cout << n % 10<<" ";
+}
+//递归求斐波那契数列
+int Fib(int n)
+{
+	if (n <= 2)
+		return 1;
+	else
+		return Fib(n - 1) + Fib(n - 2);
+}
+
+int main()
+{
+	cout << Print1(3);
+	cout << endl;
+	Print2(1234);
+	cout << Fib(6) << endl;
+	return 0;
+}
