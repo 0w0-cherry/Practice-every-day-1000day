@@ -1,0 +1,7 @@
+void (* signal( int,void(*)(int) ) )(int);
+//typedef简化
+typedef void(*pf_t)(int);
+pf_t signal(int,pf_t);
+//signal是一个函数名
+//函数有2个参数，第一个是int类型，第二个是 函数指针类型(该函数指针指向的函数的参数是int，返回类型是void)
+//signal函数的返回值也是一个函数指针类型，指向的函数的参数是int类型，返回值是void类型
