@@ -1,0 +1,97 @@
+#include<iostream>
+using namespace std;
+typedef int (*ptr)(int, int);
+//函数指针
+int Add(int x, int y)
+{
+	return x + y;
+}
+int Sub(int x, int y)
+{
+	return x - y;
+}
+int Mul(int x, int y)
+{
+	return x * y;
+}
+int Div(int x, int y)
+{
+	return x / y;
+}
+void menu()
+{
+	cout << "******************************" << endl;
+	cout << "***** 1.Add   2.Sub   ********" << endl;
+	cout << "***** 3.Mul   4.Div   ********" << endl;
+	cout << "***** 0.Exit          ********" << endl;
+	cout << "******************************" << endl;
+}
+int main1()
+{
+	int input = 0;
+	do
+	{
+		menu();
+		cout << "请选择：";
+		cin >> input;
+		ptr calculate[5] = { 0,Add,Sub,Mul,Div };
+
+		if (input >= 1 && input <= 4)
+		{
+			cout << "请输入两个操作数：";
+			int a, b;
+			cin >> a >> b;
+			cout << calculate[input](a, b) << endl;
+		}
+		else if (input == 0)
+		{
+			cout << "退出计算器" << endl;
+			//break;
+		}
+		else
+		{
+			cout << "输入错误，请重新输入" << endl;
+		}
+
+	} while (input);
+	return 0;
+}
+
+
+void calc(int (*p)(int, int))
+{
+	int x = 0, y = 0;
+	cout << "请输入两个操作数：";
+	cin >> x>>y;
+	int ret = p(x, y);
+	cout << ret << endl;
+}
+int main()
+{
+	int input = 0;
+	do
+	{ 
+		menu();
+		cout << "请选择：";
+		cin >> input;
+		switch (input)
+		{
+		case 1:
+			calc(Add);
+			break;
+		case 2:
+			calc(Sub);
+			break;
+		case 3:
+			calc(Mul);
+			break;
+		case 4:
+			calc(Div);
+			break;
+		default:
+			cout << "输入错误，重新输入" << endl;
+			break;
+		}
+	} while (input);
+	return 0;
+}
