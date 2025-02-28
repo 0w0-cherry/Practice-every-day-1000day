@@ -1,0 +1,57 @@
+//指针的运算
+struct Test
+{
+    int num;
+    char* paName;
+    short sDate;
+    char cha[2];
+    short sBa[4];
+}*p=(struct Test*)0x100000;
+//20字节
+p+0x1;//+0x14
+(unsigned long)p+0x1;//+1
+(unsigned int*)p+0x1;//+4
+
+
+int a[4]={1,2,3,4};
+int *ptr1=(int*)(&a+1);
+int *ptr2=(int*)((int)a+1);
+ptr1[-1];//4
+*ptr2;//0x 2 00 00 00
+
+
+
+
+
+二.sizeof和strlen的对比
+1.sizeof
+（1）sizeof是操作符
+（2）sizeof计算操作数所占内存大小，单位是字节
+（3）不关注内存中存放什么数据
+（4）sizeof的操作数如果是一个表达式，表达式不参与计算但仍能得到正确的结果(sizeof会在编译期间完成替换，而计算是在运行时完成但此时已经完成替换，所以不参与计算)
+
+int a[]={1,4,2,3};
+sizeof(&a+1);//4/8 字节
+
+char* p="abcdef";
+sizeof(&p+1);//4/8字节,&p+1指向p的下一个位置而不是b
+
+int a[3][4]={0};
+sizeof(a[0]);//16字节
+sizeof(*(a+1)));//16字节
+sizeof(*(&a[0]+1));//16字节
+2.strlen
+(1)strlen是库函数，使用时需要包含头文件string.h
+(2)strlen是求字符串长度的，统计的是 \0 之前的字符的个数
+(3)关注内存中是否有\0，如果没有，就会持续往后找，可能会越界
+
+char arr1[]={'a','b','c'};
+strlen(*arr1);//非法访问报错
+strlen(&arr1);//随机值
+
+char arr2[]="abcdef";
+strlen(&arr2);//6
+strlen(&arr2+1);//随机值
+
+char* p="abcdef";
+strlen(&p);//随机值
