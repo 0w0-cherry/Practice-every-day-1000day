@@ -1,0 +1,58 @@
+//版本1
+void my_strcpy(char* dest, char* src)
+{
+    while (*src != '\0')
+    {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+    //拷贝 \0
+    *dest = *src;
+}
+
+//版本2
+#include<assert.h>
+void my_strcpy(char* dest,const char* src)
+{
+    assert(dest && src);
+    while (*dest++ = *src++)
+    {
+        ;
+    }
+}
+
+
+//版本3
+#include<assert.h>
+char* my_strcpy(char* dest, char* src)
+{
+    char* ret = dest;
+    assert(dest && src);
+    while (*dest++ = *src++)
+    {
+        ;
+    }
+    return ret;//目标空间的起始地址返回
+}
+
+
+
+
+#include<assert.h>
+char* my_strcat(char* dest, const char* src)
+{
+    assert(dest && src);
+    char* ret = dest;
+    //1.找到目标空间中的 \0
+    while (dest != '\0')
+    {
+        dest++;
+    }
+    //2.拷贝数据
+    while (*dest++ = *src++)
+    {
+        ;
+    }
+    return ret;
+}
