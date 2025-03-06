@@ -1,3 +1,27 @@
+一.字符串函数
+1.strcpy
+函数原型： char*strcpy（char*dest，const char*src）   //将src复制到dest字符数组中
+头  文  件：#include <string.h>
+返  回  值：char* 类型，返回的是第一个参数的值，即目的数组的首地址；
+注意：
+（1）strcpy只用于字符串复制，遇到‘\0’时停止，还会复制字符串的结束符'\0'； 所以源字符串必须以’\0’结束，也会将源字符串的’\0’拷贝到目标空间
+（2）目标空间必须可变
+（3）如果参数dest所指的内存空间不够大，可能会造成缓冲溢出的错误情况，在编写程序时需特别留意，或者用strncpy()来代替
+char arr[4]="abc";
+char* p="abcde";//常量字符串
+strcpy(p,arr);//无法拷贝，目标空间不可变
+
+
+2.strcat
+函数原型：char* strcat(char* dest,const char* src)
+头  文  件：#include <string.h>
+返 回 值：返回dest字符串起始地址
+1、dest和src字符串必须’\0’结束
+2、目标空间必须可修改（前面不能加const并且不能说常量字符串）
+3、 dest最后的结束字符’\0’会被覆盖掉，并在连接后的字符串的尾部再增加一个’\0’
+4、dest与src所指的内存空间不能重叠
+5、dest要有足够的空间来容纳要复制的字符串。
+6、字符串不可以连接字符串本身：自己连接自己就会覆盖\0，这样就会死循环
 #include<stdio.h>
 #include<assert.h>
 
