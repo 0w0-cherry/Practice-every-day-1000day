@@ -1,0 +1,105 @@
+一.字符串函数
+1.字符串拷贝
+（1）strcpy
+函数原型： char*strcpy（char*dest，const char*src）  
+功能：将src复制到dest字符数组中
+头  文  件：#include <string.h>
+返  回  值：char* 类型，返回的是第一个参数的值，即目的数组的首地址；
+注意：
+（1）strcpy只用于字符串复制，遇到‘\0’时停止，还会复制字符串的结束符'\0'； 所以源字符串必须以’\0’结束，也会将源字符串的’\0’拷贝到目标空间
+（2）目标空间必须可变
+（3）如果参数dest所指的内存空间不够大，可能会造成缓冲溢出的错误情况，在编写程序时需特别留意，或者用strncpy()来代替
+char arr[4]="abc";
+char* p="abcde";//常量字符串
+strcpy(p,arr);//无法拷贝，目标空间不可变
+（2）strncpy
+函数原型： char *strncpy(char *dest, const char *src, int n)
+功能：将src的前n个字符复制到dest字符数组中
+返回值：dest字符串起始地址
+注意：
+（1）当src字符串长度小于n时，则拷贝完字符串后，剩余部分将用空字节填充，直到n个。不会向dest追加’\0’。
+（2）src和dest所指的内存区域不能重叠，且dest必须有足够的空间放置n个字符
+与strcpy的区别：
+（1）strcpy() 函数用来复制字符串；strncpy()用来复制字符串的前n个字符，所以要多传一个参数n
+（2）不像strcpy()，strncpy()不会向dest追加结束标记'\0'
+
+
+
+2.字符串追加
+（1）strcat
+函数原型：char* strcat(char* dest,const char* src) 
+功能：在dest的后面追加指针src内的内容
+头  文  件：#include <string.h>
+返 回 值：返回dest字符串起始地址
+注意：
+1、dest和src字符串必须’\0’结束
+2、目标空间必须可修改（前面不能加const并且不能说常量字符串）
+3、 dest最后的结束字符’\0’会被覆盖掉，并在连接后的字符串的尾部再增加一个’\0’
+4、dest与src所指的内存空间不能重叠
+5、dest要有足够的空间来容纳要复制的字符串。
+6、字符串不可以连接字符串本身：自己连接自己就会覆盖\0，这样就会死循环
+
+（2）strncat
+函数原型：char* strncat(char* dest, const char* src, int num)
+功能：在dest的后面追加指针src内的内容的前num个
+头  文  件：#include <string.h>
+返  回  值：返回dest字符串的起始地址
+注意：
+（1）dest要有足够的空间来容纳要拷贝的字符串
+（2）strncat会将dest字符串最后的’\0’覆盖掉，字符追加完成后，再追加’\0’
+与strcat的区别：
+（1）strcat()增加字符串的结束条件是src == ‘\0’；strncat的循环结束的条件则是所要追加的字符串个数为0、
+（2）strncat()用来连接源字符串的前n个字符到目标字符串后，所以要多传一个参数n
+（3）自己追加自己时不会陷入死循环
+
+3.字符串比较
+（1）strcmp
+函数原型：char* strcmp(const char* str1,const char* str2)
+功能：判断两个字符串的大小
+头  文  件：#include <string.h>
+返 回 值：
+str1 == str2 ,返回0
+str1  > str2 ,返回大于0的值
+str1  < str2 ,返回小于0的值 
+注意：
+（1）strcmp()函数首先将str1字符串的第一个字符的ACSII值减去str2第一个字符的ACSII值(自左向右逐个字符相比，直到出现不同的字符或遇'\0'为止)。若差值为零则继续比较下去；若差值不为零，则返回差值。
+（2）strcmp可用于比较两个字符串常量或比较数组和字符串常量，不能比较数字等其他形式的参数。
+
+（2）strncmp
+函数原型：int strncmp(const char* str1, const char* str2, size_t num)
+功能：判断两个字符串的前n个字符的大小
+头  文  件：#include <string.h>
+返 回 值：
+str1 == str2 ,返回0
+str1  > str2 ,返回大于0的值
+str1  < str2 ,返回小于0的值
+注意：
+（1）strncmp()函数首先将str1字符串的第一个字符的ACSII值减去str2第一个字符的ACSII值(自左向右比较前n个字符，直到出现不同的字符或遇'\0'为止)。若差值为零则继续比较下去；若差值不为零，则返回差值。
+（2）strncmp可用于比较两个字符串常量或比较数组和字符串常量，不能比较数字等其他形式的参数。
+与strcmp的区别：
+（1）可以比较指定长度的字符串，多传了一个参数
+
+4.strtok
+函数原型：char * strtok ( char * str, const char * sep);
+功能：分割字符串
+头文件：#include<string.h>
+返回值：该函数返回被分解的第一个子字符串，如果没有可检索的字符串，则返回一个空指针。
+注意：
+（1）sep参数指向⼀个字符串，定义了⽤作分隔符的字符集合
+（2）第⼀个参数指定⼀个字符串，它包含了0个或者多个由sep字符串中⼀个或者多个分隔符分的标
+记。
+（3）strtok函数找到str中的下⼀个标记，并将其⽤ \0 结尾，返回⼀个指向这个标记的指针。（注：strtok函数会改变被操作的字符串，所以在使⽤strtok函数切分的字符串⼀般都是临时拷⻉的内容并且可修改。）
+（4）strtok函数的第⼀个参数不为 NULL ，函数将找到str中第⼀个标记，strtok函数将保存它在字符串中的位置。
+（5）strtok函数的第⼀个参数为 NULL ，函数将在同⼀个字符串中被保存的位置开始，查找下⼀个标记。
+strtok的使用
+char arr[]="192.168@6.111";
+char* sep=".@";
+for(char* str=strtok(arr,sep);str!=NULL;str=strtok(NULL,sep))
+{
+    cout<<str<<endl;
+}
+5.strstr
+函数原型：char *strstr(const char *haystack, const char *needle);
+功能：查找字符串
+头文件：#include<string.h>
+返回值：返回指向 haystack 中第一次出现 needle 的位置的指针。如果 needle 未在 haystack 中找到，则返回 NULL。
