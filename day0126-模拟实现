@@ -1,0 +1,65 @@
+#include<assert.h>
+#include<iostream>
+
+//1.strcpy
+char* strcpy(char* dest, const char* src)
+{
+	assert(dest && src);
+	char* ret = dest;
+	while (*dest++ = *src++)
+	{
+		;
+	}
+	return ret;
+}
+
+
+//2.strcat
+char* strcat(char* dest, const char* src)
+{
+	assert(dest && src);
+	char* ret = dest;
+	while (dest)
+	{
+		dest++;
+	}
+	while (*dest++ = *src++);
+	return ret;
+}
+
+
+//3.strcmp
+int strcmp(const char* str1, const char* str2)
+{
+	assert(str1 && str2);
+	while (*str1 == *str2)
+	{
+		if (*str1 == '\0')
+			return 0;
+		str1++;
+		str2++;
+	}
+	return *str1 - *str2;
+}
+
+
+//4.strstr
+char* my_strstr(const char* dest, const char* src)
+{
+	if (*src == '\0')
+		return (char*)dest;
+	while (*dest)
+	{
+		const char* dest1 = dest;
+		const char* src1 = src;
+		while (*dest1 == *src1 && *dest1 && *src1)
+		{
+			dest1++;
+			src1++;
+		}
+		if (*src1 == '\0')
+			return (char*)dest;
+		dest++;
+	}
+	return NULL;
+}
