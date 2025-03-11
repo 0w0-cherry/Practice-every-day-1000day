@@ -1,0 +1,50 @@
+6.strerror
+函数原型：char * strerror ( int errnum );
+功能：显示代码错误原因
+头文件：#include<errno.h>
+返回值：返回一个指向错误消息字符串的指针。（strerror 生成的错误字符串取决于开发平台和编译器）
+strerror的使用
+FILE* pf=fopen("add.txt","r");//r 只读（文本文件），且若不存在文件则报错
+if(pf==NULL)
+{
+    cout<<strerror(errno)<<endl;
+}
+else
+{
+    cout<<"打开文件成功"<<endl;
+}
+
+
+
+
+void* my_memcpy(void* destination, const void* source, size_t num)
+{
+	void* ret = destination;
+	assert(destination && source);
+	while (num--)
+	{
+		*(char*)destination = *(char*)source;
+		destination = (char*)destination+1;
+		source = (char*)source + 1;
+
+		//部分编译器可行
+		//++(char*)destination;
+		//++(char*)source;
+	}
+	return ret;
+}
+int main()
+{
+
+	return 0;
+}
+
+
+
+一.memcpy
+函数原型：  void *memcpy(void *str1, const void *str2, size_t n) 
+功能：j将str2中的前n个字节拷贝到str1中
+头  文  件：#include <string.h>
+返  回  值：返回一个指向str1起始位置的指针
+注意：
+1.memcpy函数不能处理重叠的内存之间的数据拷贝（若内存之间有重叠，要进行数据拷贝，可以使用memmove函数）
