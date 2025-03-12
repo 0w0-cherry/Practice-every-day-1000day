@@ -1,0 +1,86 @@
+一.memcpy
+函数原型：  void *memcpy(void *str1, const void *str2, size_t n); 
+功能：将str2中的前n个字节拷贝到str1中
+头  文  件：#include <string.h>
+返  回  值：返回一个指向str1起始位置的指针
+注意：
+1.memcpy函数不能处理重叠的内存之间的数据拷贝（若内存之间有重叠，要进行数据拷贝，可以使用memmove函数）
+2.VS系列有时候标准库中的memcpy也能实现重叠数据的拷贝，但不代表所有的编译器实现的标准库中的memcpy都能实现重叠拷贝
+
+二.memmove
+函数原型：void* memmove(void* destnation,const void* source,size_t n);
+功能：将str2的前n个字节拷贝到str1中
+头文件：<string.h>
+返回值：返回一个指向str1起始位置的指针
+注意：
+1.可以处理内存之间有重叠的数据
+2.根据str1与str2地址的大小，决定从前往后拷贝还是从后往前拷贝
+
+三.memset
+函数原型：void* memset(void* ptr,int value,size_t num);
+功能：将ptr的前num个字节的值设置为value
+头文件：<string.h>
+返回值：返回一个指向ptr起始位置的指针
+注意：
+1.可用于将内存块清零或者设置为特定值
+2.memset不对指针ptr指向的内存区域做边界检查，因此使用时需确保ptr所指向的内存区域足够大，避免发生越界访问
+3.memset的第二个参数value通常是一个int类型的值，但实际上只使用了该值的低8为。折意味着范围0-255之外的其他值可能会产生未定义行为
+4.num参数表示要设置的字节数，通常是通过sizeof或其他手段计算得到的
+5.错误使用。(原因：memset是以字节为单位设置内存的)
+int arr[]={1,2,3,4,5,6,7,8,9,10};
+memset(arr,1,20);//会将这20个字节上的每个字节都改为1，得到0x01010101
+
+四.memcmp
+函数原型：int memcmp(const void* ptr1,const void* ptr2,size_t num);
+功能：比较str1和str2的前num个字节
+头文件：<string.h>
+返回值：
+（1）str1>str2,返回值大于0
+（2）str1<str2,返回值小于0
+（3）str1==str2,返回值等于0
+注意：
+
+#include<iostream>
+#include<assert.h>
+using namespace std;
+
+void* memcpy(void* destination, const void* source, size_t num)
+{
+	void* ret = destination;
+	assert(destination && source);
+	while (num--)
+	{
+		*(char*)destination = *(char*)source;
+		destination = (char*)destination+1;
+		source = (char*)source + 1;
+
+		//部分编译器可行
+		//++(char*)destination;
+		//++(char*)source;
+	}
+	return ret;
+}
+void* memmove(void* destnation, const void* source, size_t n)
+{
+	assert(destnation && source);
+	char* dest = (char*)destnation;
+	const char* src = (const char*)source;
+
+	//后->前
+	if (dest > src)
+	{
+		while (n--)
+		{
+			dest[n] = src[n];
+		}
+	}
+	//前->后
+	else
+	{
+		while (n--)
+		{
+			*dest++ = *src++;
+		}
+	}
+	return destnation;
+}
