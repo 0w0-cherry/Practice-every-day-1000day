@@ -1,0 +1,257 @@
+#include<assert.h>
+#include<iostream>
+using namespace std;
+int strlen_1(const char* str)
+{
+	int count = 0;
+	while (*str++)
+	{
+		count++;
+	}
+	return count;
+}
+int strlen_2(const char* str)
+{
+	if (*str == '\0')
+		return 0;
+	else
+		return 1 + strlen_2(str + 1);
+}
+int strlen_3(const char* str)
+{
+	const char* begin = str;
+	while (*str)
+	{
+		str++;
+	}
+	return str - begin;
+}
+
+char* strcpy_1(char* dest, const char* src)
+{
+	assert(dest && src);
+	char* ret = dest;
+	while (*dest++ = *src++)
+	{
+		;
+	}
+	return ret;
+}
+char* strcat_1(char* dest, const char* src)
+{
+	assert(dest && src);
+	char* ret = dest;
+	while (*dest)
+	{
+		dest++;
+	}
+	while (*src)
+	{
+		*dest++ = *src++;
+	}
+	*dest = *src;
+	return ret;
+}
+
+int strcmp_1(const char* str1, const char* str2)
+{
+	assert(str1 && str2);
+	while (*str1 == *str2)
+	{
+		if (*str1 == '\0')
+			return 0;
+		str1++;
+		str2++;
+	}
+	return *str1 - *str2;
+}
+int strcmp_2(const char* str1, const char* str2)
+{
+	assert(str1 && str2);
+	while (*str1 == *str2)
+	{
+		if (*str1 == '\0')
+			return 0;
+		str1++;
+		str2++;
+	}
+	if (*str1 > *str2)
+		return 1;
+	else
+		return -1;
+}
+char* strstr_1(const char* str1, const char* str2)
+{
+	if (*str2 == '\0')
+		return (char*)str1;
+	while (*str1)
+	{
+		const char* s1 = str1;
+		const char* s2 = str2;
+		while (*s1 == *s2 && *s1 && *s2)
+		{
+			s1++;
+			s2++;
+		}
+		if (*s2 == '\0')
+			return (char*)str1;
+		str1++;
+	}
+	return NULL;
+}
+
+char* strncpy_1(char* destnation, const char* source,size_t n)
+{
+	assert(destnation && source);
+	char* ret = destnation;
+	int i;
+	for (i = 0; source[i] && i < n; i++)
+	{
+		destnation[i] = source[i];
+	}
+	if (i < n)
+	{
+		destnation[i++] = 0;
+	}
+	return ret;
+}
+
+char* strncat_1(char* dest, const char* src, size_t n)
+{
+	assert(dest && src);
+	char* ret = dest;
+	while (*dest)
+	{
+		dest++;
+	}
+	while (n--)
+	{
+		*dest++ = *src++;
+	}
+	*dest = '\0';
+	return ret;
+}
+
+void* memcpy(void* dest, const void* src, size_t n)
+{
+	assert(dest && src);
+	void* ret = dest;
+	while (n--)
+	{
+		*(char*)dest = *(char*)src;
+		dest = (char*)dest + 1;
+		src = (char*)src + 1;
+	}
+	return ret;
+}
+void* memmove(void* dest, const void* src, size_t n)
+{
+	assert(dest && src);
+	void* ret = dest;
+	char* d = (char*)dest;
+	char* s = (char*)src;
+	if (dest < src)
+	{
+		while (n--)
+		{
+			*d++ = *s++;
+		}
+	}
+	else
+	{
+		while (n-->0)
+		{
+			d[n] = s[n];
+		}
+	}
+	return ret;
+}
+
+
+enum State
+{
+	VALUE,
+	ERRVALUE
+};
+State Sta = ERRVALUE;
+int atoi(const char* str)
+{
+	assert(str);
+	if (*str == '\0')
+		return 0;
+	while (*str==' ')
+	{
+		str++;
+	}
+	long long n = 0;
+	bool flag = 1;
+
+	if (*str == '-')
+	{
+		flag = 0;
+		str++;
+	}
+	else if (*str == '+')
+	{
+		str++;
+	}
+	while (*str)
+	{
+		//检查*str是否为单个十进制数字
+		if (isdigit(*str))
+		{
+			//最后再根据flag确定正负
+			n = n * 10 + (*str - '0');
+			if (n > INT_MAX)
+			{
+				n = INT_MAX;
+				break;
+			}
+		}
+		else
+		{
+			break;
+		}
+		str++;
+	}
+	if (flag == 0)
+	{
+		n = -n;
+	}
+	if (*str == '\0')
+		Sta = VALUE;
+
+	return (int)n;
+}
+int main()
+{
+	char p[20] = "abcde";
+	char pp[20] = "bbbb";
+	cout << strlen_3(p) << endl;
+	cout << strcat_1(p, "abcde")<<endl;
+	cout << strcmp_2(p, pp)<<endl;
+
+
+	union
+	{
+		char x;
+		int y;
+	}u;
+	int i = 1;
+	int a = *((char*)&i);
+	int b = i >> 1;
+
+	u.y = 1;
+	int c = u.x;
+	cout << c << endl;
+	cout << atoi("-123") << endl;
+
+
+	char arr[] = "123456";
+	int m = atoi("-123456");
+	if (Sta == VALUE)
+		cout << m << endl;
+	else
+		cout << "非法转换\n";
+	return 0;
+}
