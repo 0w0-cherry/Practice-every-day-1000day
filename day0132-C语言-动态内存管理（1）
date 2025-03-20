@@ -1,0 +1,107 @@
+一.为什么要有动态内存分配？
+（1）通过创建变量的方式开辟内存，开辟的大小是固定的
+（2）数组在声明的时候，必须指定长度，数组空间一旦确定大小就不能调整
+（3）动态开辟内存让程序员可以申请和释放空间，比较灵活
+
+二.空指针
+1.NULL
+（1）头文件：#include<stdio.h>
+（2）底层实现： 
+在C中：#define NULL ((void*)0)
+在C++中： #define NULL 0
+2.nullptr
+（1）头文件：#include<iostream>
+（2）底层实现：
+在C++中：#define nullptr ((void*)0)
+
+三.报错函数
+1.perror
+（1）函数原型：void perror(const char* str);
+（2）头文件：#include<stdio.h>
+（3）返回值：无返回值
+（4）功能：将全局变量errno设置为一个特定的错误码。perror函数会自动读取errno的值，并生成对应的错误表述，然后将错误描述与传入的字符串参数拼接输出
+int* p=(int*)malloc(10*sizeof(int));
+if(p==NULL)
+{
+    //perror();
+    perror("malloc");
+    return 1;
+}
+2.strerror
+（1）函数原型：char* strerror(int errnum)
+（2）头文件：#include<string,h>
+（3）返回值：返回一个指向描述该错误的字符串的指针
+（4）功能：生成错误信息的前缀（可以手动描述这个错误是如何发生的）
+char* p=(char*)malloc(sizeof(int)*10);
+if(p==NULL)
+{
+    cout<<"开辟空间失败："<<strerror(errno)<<endl;//errno 是一个全局变量，用于存储最近一次系统调用或库函数调用失败时返回的错误码。
+    return 1;
+}
+
+四.malloc
+1.函数原型：void* malloc(size_t size);
+2.头文件：#include<stdlib.h>
+3.返回值：返回一个指向起始地址的void* 指针
+4.功能：这个函数向内存申请一块连续可用的空间，并返回指向这块空间的指针
+（1）如果开辟成功，则返回一个指向开辟好空间的指针
+（2）如果开辟失败，则返回一个NULL指针，因此malloc的返回值一定要检查
+（3）返回值的类型是void*，所以malloc函数并不知道开辟空间的类型，具体在使用的时候由使用者自己决定
+（4）如果参数size为0，malloc的行为是标准未定义的，取决于编译器
+4.malloc的回收
+（1）free回收
+（2）程序结束后，由操作系统自动回收
+5.malloc所占内存空间：malloc是在堆区申请内存的
+
+五.calloc
+1.函数原型：void* calloc(size_t num,size_t size)
+2.头文件：#include<stdlib.h>
+3.返回值：
+（1）开辟成功，返回一个指针，指向分配的内存的起始地址。
+（2）开辟失败，返回NULL
+4.功能：开辟一块连续的空间，并返回这个空间的起始地址
+5.与malloc的区别：calloc会将开辟的内存的值都设置为0，而malloc是随机值
+int* p=(int*)calloc(4,10);
+六.realloc
+1.函数原型：void* realloc(void* ptr,size_t size)
+2.头文件：#include<stdlib.h>
+3.返回值：
+（1）如果成功，返回指向新内存块的起始地址
+（2）如果失败，返回NULL。并且原来的内存块保持不变（没有释放）
+4.功能：重新调整之前malloc或calloc所分配的内存块的大小
+5.注意事项：
+（1）realloc可能会将内存块移动到新的位置（如果原先位置的空间不够）。如果移动成功，ptr会指向新位置（原先的内容会被拷贝），且旧的ptr指针需要被更新为realloc() 返回的地址（不会自动更新）
+（2）如果分配失败，realloc()返回NULL，而原先内存块不会被释放。为避免内存泄漏，应使用一个临时指针来接收realloc的值，并检查是否为NULL
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+int main()
+{
+    int* ptr = (int*)malloc(sizeof(int) * 5);
+    if (ptr == NULL)
+    {
+        printf("内存分配失败\n");
+        return 1;
+    }
+    //内存分配成功
+    int* temp_ptr = (int*)realloc(ptr, INT_MAX*4);
+    if (temp_ptr == NULL)//注意不能对空指针解引用
+    {
+        //perror("realloc");
+        printf("调整空间失败：%s", strerror(errno));//errno 是一个全局变量，用于存储最近一次系统调用或库函数调用失败时返回的错误码。
+        return 1;
+    }
+    ptr = temp_ptr;//重新分配成功
+    temp_ptr=NULL;//令temp_ptr没有能力访问空间
+    return 0;
+}
+七.free
+1.函数原型：void free(void* ptr);
+2.头文件：#include<stdlib.h>
+3.返回值：无返回值
+4.功能：释放动态开辟的内存
+（1）如果ptr指向的空间不是动态开辟的，那么free函数的行为是未定义的
+（2）如果参数ptr是NULL指针，则函数什么都不做
+int* p=(int*)malloc(sizeof(int*10));
+free(p);//此时p虽被释放，但仍指向之前的地址，野指针
+p=NULL;//野指针置为空
