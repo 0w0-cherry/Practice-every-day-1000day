@@ -1,0 +1,84 @@
+八.常见的动态内存的错误
+1.对空指针（NULL）进行解引用
+int* p=(int*)malloc(20);//开辟空间失败会返回空指针
+//未对p指针进行判断是否为空
+for(int i=0;i<5;i++)
+{
+    *(p+i)=i;//可能对空指针进行解引用
+}
+2.越界访问
+3.对非动态开辟的内存使用free释放
+int a=10;
+int* p=&a;
+free(p);
+4.使用free释放动态开辟的内存的一部分
+int* p=(int*)malloc(40);
+if(p==NULL)
+{
+    strerror(errno);
+    perror("malloc");
+    return 1;
+}
+for(int i=0;i<5;i++)
+{
+    *p=i+1;
+    p++;
+}
+free(p);
+p=NULL;
+5.对同一块动态内存多次释放
+（1）措施：对释放的指针置为空指针（这样就可防止多次释放发生的报错）
+6.动态开辟的内存忘记释放或代码没有运行到释放就返回了（内存泄漏）
+void test()
+{
+    int* p=(int*)malloc(40);
+    if(p==NULL)
+    {
+        return;    
+    }
+    if(5==2+3)
+    {
+        return; //此时返回，但p还未被释放   
+    }
+    free(p);
+    p=NULL;
+}
+int main()
+{
+    test();
+    return 0;
+}
+
+九.柔性数组
+1.定义：结构体中的最后一个元素允许是未知大小的数组，这就是柔性数组的成员
+2.写法
+//写法一,有些编译器会报错无法编译
+typedef struct st_type
+{
+    int i;
+    //int* a;//与柔性数组功能相同，可动态开辟内存
+    int a[0];//柔性数组成员
+}type_a;
+
+typedef struct stt_type
+{
+    int i;
+    int a[];//柔性数组成员
+}type_b;
+3.柔性数组的特点
+（1）结构中的柔性数组成员的前面必须至少有一个其他成员
+（2）sizeof返回的这种结构大小不包括柔性数组的内存
+（3）包含柔性数组成员的结构体用malloc()函数进行内存的动态分配，其分配的内存应大于结构的大小，以适应柔性数组的预期大小
+struct st_type
+{
+    int i;
+    int a[0];
+}
+int main()
+{
+    struct st_type* p=(struct st_type*)malloc(sizeof(struct st_type)+10*sizeof(int));
+    return 0;
+}
+4.柔性数组的优点
+（1）方便内存释放（柔性数组free释放一次，使用指针free释放两次）
+（2）有利于访问速度
