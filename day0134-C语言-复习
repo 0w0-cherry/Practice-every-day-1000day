@@ -1,0 +1,127 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+
+
+//int main()
+//{
+//    int* ptr = (int*)malloc(sizeof(int) * 5);
+//    if (ptr == NULL)
+//    {
+//        printf("内存分配失败\n");
+//        return 1;
+//    }
+//    //内存分配成功
+//    int* temp_ptr = (int*)realloc(ptr, INT_MAX*4);
+//    if (temp_ptr == NULL)//注意不能对空指针解引用
+//    {
+//        perror("realloc");
+//        //printf("调整空间失败：%s", strerror(errno));//errno 是一个全局变量，用于存储最近一次系统调用或库函数调用失败时返回的错误码。
+//        return 1;
+//    }
+//    ptr = temp_ptr;//重新分配成功
+//
+//    int a = 10;
+//
+//    return 0;
+//}
+#include<iostream>
+#include<stdlib.h>
+
+using namespace std;
+typedef struct A
+{
+	char name[20];//0-19
+	int age;//20-23
+	char sex;//24
+	union//35,4
+	{
+		struct//35
+		{
+			int a;//28-31
+			int b;//32-35
+		}x;
+		struct//35
+		{
+			int a;//28-31
+			int b;//32-35
+		}y;
+	}book;
+	int aaa[0];//变长数组
+
+}A;//1-36
+
+
+
+
+
+int main()
+{
+	//int a = sizeof(A) + sizeof(int) * 100;
+	//int* p = (int*)malloc(a);
+	//if (p == nullptr)
+	//{
+	//	perror("p-malloc");
+	//	return 1;
+	//}
+
+	//int* temp_p = (int*)realloc(p, a - sizeof(int) * 10);
+	//if (temp_p == nullptr)
+	//{
+	//	perror("temp_p-realloc");
+	//	return 1;
+	//}
+	//p = temp_p;
+	//temp_p = nullptr;
+
+	//int* p2 = (int*)calloc(10, 4);
+	//if (p2 == nullptr)
+	//{
+	//	perror("p2-calloc");
+	//	return 1;
+	//}
+	//int* temp_p2 = (int*)realloc(p2, a);
+	//if (temp_p2 == nullptr)
+	//{
+	//	perror("temp_p2-realloc");
+	//	return 1;
+	//}
+	//p2 = temp_p2;
+	//temp_p2 = nullptr;
+	//int a[5][5];
+	//int(*p)[5];
+	//p = a;
+	//printf("%p,%d\n", &p[4][2] - &a[4][2], &p[4][2] - &a[4][2]);
+	//int temp[5] = { 1,2,3,4,5 };
+	//int (*pp)[4] = (int(*)[4]) &temp;
+
+	int i = 1;
+	int b = *(char*)&i;
+	//cout << *(int*) & i<<endl;
+	cout << b << endl;
+	printf("%d\n", *(char*) & i);
+	union
+	{
+		int a;
+		char b;
+	}u;
+	u.a = 1;
+	printf("%d\n", (int)u.b);
+	//cout << u.b << endl;
+	return 0;
+}
+
+
+char* strcpy(char* dest, char* src);
+char* strcat(char* dest, char* src);
+int strcmp(char* str1, char* str2);
+char* strtok(char* str1, char* str2);
+char* strstr(char* str1, char* str2);
+
+void* memcpy(void* dest, void* src, size_t n);
+void* memmove(void* dest, void* src, size_t n);
+void* memset(void* str, int value, int num);
+void* memcmp(void* str1, void* str2, size_t n);
+
+int atoi(const char* str);
+//V=(-1)^S * M * 2^E
