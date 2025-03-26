@@ -1,0 +1,55 @@
+顺序读写函数
+1.字符级读写
+函数名	参数	返回值	功能	适用于
+fgetc	int fgetc(FILE* stream)	以无符号char强转为int的形式返回读取的字符
+如果到达文件末尾或发生读错误，返回EOF。	字符输入函数	所有输入流
+fputc	int fputc(int char,FILE* stream)
+char -- 要被写入的字符，该字符以int值传递	如果没发生错误，返回被写入的字符
+如果发生错误，则返回EOF，并设置错误识符。	字符输出函数	所有输出流
+
+2.文本行读写
+函数名	参数	返回值	功能	适用于
+fgets	char* fgets(char* str,int n, FILE * stream)
+str -- 一个指向字符数组的指针，存储要读取的字符串
+n   -- 要读取的最大字符数(包括最后的空字符)	如果成功，返回相同的str参数
+到达文件末尾，或没有读取到字符，str内容不变，并返回一个空指针
+如果发生错误，返回一个空指针	文本行输入函数	所有输入流
+fputs	int puts(const char* str, FILE* stream)
+str -- 数组，包含了要写入的以空字符终止的字符序列	返回一个非负值，
+如果发生错误，返回EOF	文本行输出函数	所有输出流
+3.格式化读写
+（1）
+函数名	参数	返回值	功能	适用于
+fscanf	int fscanf(FILE* stream,const char* format,.......)
+format -- 形式为：=%[width]type=	如果成功，返回成功匹配和赋值的个数
+到达文件末尾或发生读错误，返回EOF	格式化输入函数	所有输入流
+fprintf	int fprintf(FILE* stream,const char* format,.........)
+format -- 形式为：=%[width]specifier	如果成功，返回写入的字符总数
+如果失败，返回一个负数	格式化输出函数	所有输出流
+（2）fscanf - type
+类型	合格的输入
+c	单个字符。
+如果只当了长度不为1的宽度width，会读取width个字符并将它们在数组中连续存储
+末尾不会追加空字符
+o	八进制整数
+u	无符号的十进制整数
+x，X	十六进制整数
+（3）fprintf - specifier
+specifier（说明符）	输出
+o	有符号八进制整数
+u	无符号十进制整数
+x，X	无符号十六进制整数
+	
+4.二进制读写
+函数名	参数	返回值	功能	适用于
+fread	size_t fread(void* ptr,size_t size, size_t num, FILE* stream)
+ptr   -- 指向要存放读入数据的内存块的指针
+size -- 要读取的每个元素的大小（单位：字节）
+num -- 元素的个数（单位：字节）	如果成功，返回读取的元素总数
+如果总数与num参数不同则代表发生了一个错误
+或者到达文件末尾	二进制输入	文件输入流
+fwrite	size_t fwrite(const void* ptr, size_t size, size_t num, FILE* stream)
+ptr   -- 指向要被写入的数组的指针
+size -- 要被写入的每个元素的大小（单位：字节）
+num -- 元素的个数（单位：字节）	如果成功，返回一个整数，代表元素的总数
+返回的数字与num参数不同，则会显示一个错误	二进制输出	文件输出流
