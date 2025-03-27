@@ -1,0 +1,62 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<stdio.h>
+int fgetc(FILE* stream);
+int fputc(int charr, FILE* stream);
+char* fgets(char* str,int n,FILE* stream);
+char* fputs(char* str, FILE* stream);
+int fscanf(FILE* stream, const char* format,char* str1,char* str2 );
+//将文件中的数据读取到变量中
+int fprintf(FILE* stream, const char* format, char* str1, char* str2);
+//将变量中的数据写入文件中
+size_t fread(void* ptr, size_t size, size_t num, FILE* stream);
+//将文件中的数据以二进制形式读取到ptr中
+size_t fwrite(const void* ptr, size_t size, size_t num, FILE* stream);
+//将ptr存放的数据写入文件中
+
+
+int fgetc(FILE* stream);
+int fputc(int charr, FILE* stream);
+char* fgets(char* str, int n, FILE* stream);
+char* fputs(char* str, FILE* stream);
+int fscanf(FILE* stream,const char* format, char* str1, char* str2);
+//将文件中的数据读取到str里面
+int fprintf(FILE* stream, const char* format, char* str1, char* str2);
+//将str中的数据写入stream
+size_t fread(void* ptr, size_t size, size_t n, FILE* stream);
+//将文件中的数据以二进制形式读取到ptr中
+size_t fwrite(void* ptr, size_t size, size_t n, FILE* stream);
+//将ptr中的数据以二进制形式写入文件中
+int main()
+{
+	char a[] = "g";
+	FILE* p1 = fopen("test1.txt", "r");
+	if (p1 == NULL)
+	{
+		perror("fopen-1");
+		return 1;
+	}
+
+	FILE* p2 = fopen("text2.txt", "w");
+	if (p2 == NULL)
+	{
+		perror("fopen-2");
+		fclose(p1);
+		return 1;
+	}
+	int ch = 0;
+	while ((ch = fgetc(p1)) != EOF)
+		fputc(ch, p2);
+
+	fclose(p1);
+	p1 = NULL;
+	fclose(p2);
+	p2 = NULL;
+
+	int b = 10;
+	char arr[20] = { 0 };
+	sprintf(arr, "%d", b);
+	printf("%s\n", arr);
+	printf("a");
+	return 0;
+}
+
