@@ -1,0 +1,54 @@
+六.文件的随机读写
+函数名	参数	返回值	功能
+fseek	int fseek(FILE* stream,long int offset,int whence)
+offset    -- 相对whence的偏移量（单位：字节）
+whence -- 表示开始添加偏移offset的位置，一般是一下常量
+SEEK_SET -- 文件的开头
+SEEK_CUR -- 文件指针的当前位置
+SEEK_END -- 文件的末尾	如果成功，返回0
+否则返回非0的值	定位文件指针（文件内容的光标）
+ftell	long int ftell(FILE* stream)	如果成功，返回当前的标识符的值
+发生错误，则返回-1L
+	返回文件指针相对于起始位置的偏移量
+rewind	void rewind(FILE* stream)	无	让文件指针回到文件的起始位置
+七.文件读取结束的判定
+1.文件读取结束的原因
+被错误使用的feof：该函数只能判断文件读取结束的原因是否为：遇到文件末尾（但文件读取结束还可能是发生读取错误）
+函数名	功能
+feof	判断文件读取结束的原因是否是：遇见文件末尾
+
+
+  int main()
+{
+	char a[] = "g";
+	FILE* p1 = fopen("test1.txt", "r");
+	if (p1 == NULL)
+	{
+		perror("fopen-1");
+		return 1;
+	}
+	FILE* p2 = fopen("test2.txt", "w");
+	if (p2 == NULL)
+	{
+		perror("fopen-2");
+		fclose(p1);
+		return 1;
+	}
+	int ch = 0;
+	while ((ch = fgetc(p1)) != EOF)
+	{
+		fputc(ch, p2);
+	}
+	char* b = NULL;
+	char* ret = NULL;
+	while ( (ret=fgets(b, 10, p1)) != NULL)
+	{
+		fputs(b, p2);
+	}
+
+	fclose(p1);
+	p1 = NULL;
+	fclose(p2);
+	p2 = NULL;
+	return 0;
+}
